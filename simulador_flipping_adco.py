@@ -74,7 +74,8 @@ if os.path.exists("comparables_chamberi.csv"):
     st.subheader("🏘️ Comparables en Chamberí (datos reales)")
     comparables_df = pd.read_csv("comparables_chamberi.csv")
     comparables_df["Link"] = comparables_df["Link"].apply(lambda x: f"[Ver anuncio]({x})")
-    st.write(comparables_df.to_markdown(index=False), unsafe_allow_html=True)
+    st.write(comparables_df.to_html(index=False, escape=False), unsafe_allow_html=True)
+
 else:
     st.info("No se encontraron comparables reales para Chamberí.")
 
