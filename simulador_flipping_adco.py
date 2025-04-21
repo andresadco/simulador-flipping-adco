@@ -1,12 +1,9 @@
-
-# ADCO - Simulador de Flipping Inmobiliario Profesional
-# Incluye: ROI + TIR + sensibilidad + scraping comparables + PDF export
-
 import streamlit as st
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+from numpy_financial import irr  # ✅ solución moderna para calcular TIR
 
 st.set_page_config(page_title="Simulador Pro ADCO", layout="centered")
 st.title("🏘️ Simulador de Flipping Inmobiliario – Versión Avanzada")
@@ -62,14 +59,14 @@ comision_venta_eur = precio_venta * comision_venta / 100
 ganancia_neta = precio_venta - comision_venta_eur - inversion_total
 
 roi = ganancia_neta / inversion_total * 100
+tir = irr([-inversion_total, precio_venta - comision_venta_eur]) * 100 if (precio_venta - comision_venta_eur) > 0 else 0
 
-# TIR (aproximada solo con flujo neto)
-flujo_neto = [ -inversion_total ] + [ precio_venta - comision_venta_eur ]
-tir = np.irr(flujo_neto) * 100 if flujo_neto[1] > 0 else 0
+# Precio sugerido con ROI 20%
+precio_venta_sugerido = (inversion_total * 1.2) + comision_venta_eur
 
-st.metric("ROI total", f"{roi:.2f}%")
-st.metric("TIR estimada", f"{tir:.2f}%")
-
+st.metric("💰 ROI total", f"{roi:.2f}%")
+st.metric("📈 TIR estimada", f"{tir:.2f}%")
+st.metric("💡 Precio sugerido con 20% ROI", f"{precio_venta_sugerido:,.0f} €")
 
 # --- ANÁLISIS DE SENSIBILIDAD ---
 st.subheader("📈 Análisis de Sensibilidad")
@@ -85,8 +82,8 @@ for vp in variaciones_precio:
         nuevo_total = gastos_total_compra + nuevo_coste_reforma * (1 + iva_reforma / 100)
         nuevo_ganancia = nuevo_precio_venta - nuevo_precio_venta * comision_venta / 100 - nuevo_total
         nuevo_roi = nuevo_ganancia / nuevo_total * 100
-        flujo = [ -nuevo_total, nuevo_precio_venta - nuevo_precio_venta * comision_venta / 100 ]
-        nuevo_tir = np.irr(flujo) * 100 if flujo[1] > 0 else 0
+        flujo = [-nuevo_total, nuevo_precio_venta - nuevo_precio_venta * comision_venta / 100]
+        nuevo_tir = irr(flujo) * 100 if flujo[1] > 0 else 0
         resultados.append([f"{int(vp*100)}%", f"{int(vr*100)}%", round(nuevo_roi, 2), round(nuevo_tir, 2)])
 
 df_sens = pd.DataFrame(resultados, columns=["ΔPrecio Venta", "ΔCoste Reforma", "ROI (%)", "TIR (%)"])
@@ -107,8 +104,6 @@ if os.path.exists(csv_path):
     st.write(df_comp.to_html(index=False, escape=False), unsafe_allow_html=True)
 else:
     st.warning(f"No hay comparables para {zona}. Haz scraping o súbelos.")
-
-# Aquí irá el botón de exportación a PDF en versión final
 
 
 
