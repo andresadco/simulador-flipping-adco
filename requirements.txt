@@ -4,3 +4,8 @@ numpy
 matplotlib
 streamlit
 fpdf
+numpy
+numpy-financial
+streamlit
+pandas
+matplotlib
