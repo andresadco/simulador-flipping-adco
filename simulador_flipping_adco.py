@@ -12,8 +12,7 @@ st.set_page_config(page_title="Simulador Pro ADCO", layout="centered")
 st.title("🏘️ Simulador de Flipping Inmobiliario – Versión Avanzada")
 st.caption("Desarrollado por ADCO Investments – andres@adco.es")
 
-# Logo
-st.image("ADCO_LOGO_SIMPLE.png", width=150)
+
 
 st.header("📥 Datos del Proyecto")
 
