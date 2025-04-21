@@ -7,7 +7,7 @@ import base64
 
 st.set_page_config(page_title="Simulador Flipping - ADCO", layout="centered")
 
-st.image("ADCO_LOGO_SIMPLE.png", width=150)
+
 st.title("🏘️ Simulador de Flipping Inmobiliario")
 st.markdown("Versión Pro creada por **ADCO Investments**")
 
