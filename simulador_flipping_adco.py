@@ -1,5 +1,4 @@
-
-import streamlit as s
+mport streamlit as s
             st.subheader("📊 Análisis Comparativo €/m²")
             df_comp = df_result[df_result["€/m²"].apply(lambda x: str(x).replace(",", "").isdigit())]
             df_comp["€/m²"] = df_comp["€/m²"].astype(str).str.replace(",", "").astype(float)
@@ -327,4 +326,7 @@ if os.path.exists("comparables_m30.csv"):
     st.write(df_comp.to_html(index=False, escape=False), unsafe_allow_html=True)
 else:
     st.info("No hay comparables disponibles. Usa el botón para actualizarlos.")
+
+
+
 
