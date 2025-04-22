@@ -216,7 +216,15 @@ def scrape_comparables(zona):
                 price_tag = item.select_one(".item-price")
                 price = price_tag.get_text(strip=True).replace("€", "").replace(".", "") if price_tag else "0"
                 
-details = item.select(".item-detail")
+try:
+                    details = item.select(".item-detail")
+                    m2 = "0"
+                    for detail in details:
+                        if "m²" in detail.get_text():
+                            m2 = detail.get_text(strip=True).replace(" m²", "").replace(",", ".")
+                            break
+                except:
+                    m2 = "0"
 m2 = "0"
 for detail in details:
     if "m²" in detail.get_text():
@@ -308,7 +316,15 @@ def scrape_m30(zonas_dict, seleccionadas):
                     price_tag = item.select_one(".item-price")
                     price = price_tag.get_text(strip=True).replace("€", "").replace(".", "") if price_tag else "0"
                     
-details = item.select(".item-detail")
+try:
+                    details = item.select(".item-detail")
+                    m2 = "0"
+                    for detail in details:
+                        if "m²" in detail.get_text():
+                            m2 = detail.get_text(strip=True).replace(" m²", "").replace(",", ".")
+                            break
+                except:
+                    m2 = "0"
 m2 = "0"
 for detail in details:
     if "m²" in detail.get_text():
@@ -377,7 +393,6 @@ if os.path.exists("comparables_m30.csv"):
     st.write(df_comp.to_html(index=False, escape=False), unsafe_allow_html=True)
 else:
     st.info("No hay comparables disponibles. Usa el botón para actualizarlos.")
-
 
 
 
