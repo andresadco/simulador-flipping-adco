@@ -33,6 +33,7 @@ with st.expander("🏗️ Detalles del Proyecto"):
         ibi = st.number_input("IBI (€)", value=500)
 
 #  Costo de Venta
+precio_venta = st.number_input("Precio de venta esperado (€)", value=1350000)
 st.subheader("💰Comisión")
 
 comision_venta = st.number_input("Comisión de venta (%)", value=3.0)
