@@ -1,4 +1,4 @@
-mport streamlit as s
+import streamlit as s
             st.subheader("📊 Análisis Comparativo €/m²")
             df_comp = df_result[df_result["€/m²"].apply(lambda x: str(x).replace(",", "").isdigit())]
             df_comp["€/m²"] = df_comp["€/m²"].astype(str).str.replace(",", "").astype(float)
