@@ -1,4 +1,4 @@
-import streamlit as st
+mport streamlit as st
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -205,30 +205,16 @@ def scrape_comparables(zona):
             "User-Agent": random.choice(headers_list),
             "Accept-Language": "es-ES,es;q=0.9"
         }
-                details = item.select(".item-detail")
                 m2 = "0"
-                for detail in details:
-                    if "m²" in detail.get_text():
-                        m2 = detail.get_text(strip=True).replace(" m²", "").replace(",", ".")
                         break
 m2 = "0"
-for detail in details:
-    if "m²" in detail.get_text():
-        m2 = detail.get_text(strip=True).replace(" m²", "").replace(",", ".")
         break
 
                 m2 = m2_tag.get_text(strip=True).replace(" m²", "").replace(",", ".") if m2_tag else "0"
                 link = "https://www.idealista.com" + item.select_one("a.item-link")["href"]
-                details = item.select(".item-detail")
                 m2 = "0"
-                for detail in details:
-                    if "m²" in detail.get_text():
-                        m2 = detail.get_text(strip=True).replace(" m²", "").replace(",", ".")
                         break
 m2 = "0"
-for detail in details:
-    if "m²" in detail.get_text():
-        m2 = detail.get_text(strip=True).replace(" m²", "").replace(",", ".")
         break
 
                     m2 = m2_tag.get_text(strip=True).replace(" m²", "").replace(",", ".") if m2_tag else "0"
