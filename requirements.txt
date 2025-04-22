@@ -9,3 +9,8 @@ numpy-financial
 streamlit
 pandas
 matplotlib
+streamlit
+pandas
+numpy
+numpy-financial
+matplotlib
