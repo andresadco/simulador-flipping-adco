@@ -257,6 +257,8 @@ if st.button("🔄 Obtener comparables ahora"):
             st.write(df_result.to_markdown(index=False), unsafe_allow_html=True)
         else:
             st.error("No se encontraron resultados.")
+
+
 import streamlit as st
 import pandas as pd
 import requests
