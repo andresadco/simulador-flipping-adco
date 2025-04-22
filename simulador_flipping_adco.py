@@ -259,12 +259,6 @@ if st.button("🔄 Obtener comparables ahora"):
             st.error("No se encontraron resultados.")
 
 
-import streamlit as st
-import pandas as pd
-import requests
-import random
-import time
-from bs4 import BeautifulSoup
 
 st.set_page_config(page_title="Comparador por Subzona – ADCO", layout="centered")
 st.title("🏘️ Comparador de Subzonas – Idealista + ADCO")
