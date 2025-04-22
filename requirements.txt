@@ -3,5 +3,7 @@ pandas
 numpy
 numpy-financial
 matplotlib
+requests
+beautifulsoup4
 
 
