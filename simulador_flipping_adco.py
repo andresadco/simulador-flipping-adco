@@ -267,7 +267,7 @@ st.caption("Obtén datos precisos de comparables reales por subzona")
 # Subzonas y URLs
 SUBZONAS_M30 = {
     "Chamberí": {
-        "Almagro": "https://www.idealista.com/venta-viviendas/madrid/almagro/",
+        "Almagro": "https://www.idealista.com/venta-viviendas/madrid/chamberi/almagro/",
         "Trafalgar": "https://www.idealista.com/venta-viviendas/madrid/trafalgar/",
         "Ríos Rosas": "https://www.idealista.com/venta-viviendas/madrid/rios-rosas/",
         "Arapiles": "https://www.idealista.com/venta-viviendas/madrid/arapiles/",
