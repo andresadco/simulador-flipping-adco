@@ -1,4 +1,19 @@
-import streamlit as st
+import streamlit as s
+            st.subheader("📊 Análisis Comparativo €/m²")
+            df_comp = df_result[df_result["€/m²"].apply(lambda x: str(x).replace(",", "").isdigit())]
+            df_comp["€/m²"] = df_comp["€/m²"].astype(str).str.replace(",", "").astype(float)
+            zona_media = df_comp["€/m²"].mean()
+            precio_m2_usuario = precio_venta / superficie if superficie else 0
+            comparacion = precio_m2_usuario - zona_media
+            st.metric("Tu precio por m²", f"{precio_m2_usuario:,.0f} €/m²")
+            st.metric("Media de comparables", f"{zona_media:,.0f} €/m²")
+            if comparacion > 0:
+                st.markdown(f"🔺 Estás **{comparacion:,.0f} €/m² arriba del mercado**")
+            elif comparacion < 0:
+                st.markdown(f"🟢 Estás **{-comparacion:,.0f} €/m² por debajo del mercado**")
+            else:
+                st.markdown("🔹 Estás alineado con el mercado.")
+t
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -279,4 +294,5 @@ if os.path.exists("comparables_m30.csv"):
     st.write(df_comp.to_html(index=False, escape=False), unsafe_allow_html=True)
 else:
     st.info("No hay comparables disponibles. Usa el botón para actualizarlos.")
+
 
