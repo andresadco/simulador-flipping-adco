@@ -181,9 +181,9 @@ st.subheader("🎯 Comparativa: Elige la zona a comparar")
 
 ZONAS_M30 = {
     "Chamberí": "https://www.idealista.com/venta-viviendas/madrid/chamberi/",
-    "Salamanca": "https://www.idealista.com/venta-viviendas/madrid/salamanca-madrid/",
+    "Salamanca": "https://www.idealista.com/venta-viviendas/madrid/salamanca/",
     "Retiro": "https://www.idealista.com/venta-viviendas/madrid/retiro/",
-    "Centro": "https://www.idealista.com/venta-viviendas/madrid/centro-madrid/",
+    "Centro": "https://www.idealista.com/venta-viviendas/madrid/centro/",
     "Arganzuela": "https://www.idealista.com/venta-viviendas/madrid/arganzuela/",
     "Tetuán": "https://www.idealista.com/venta-viviendas/madrid/tetuan/",
     "Chamartín": "https://www.idealista.com/venta-viviendas/madrid/chamartin/"
