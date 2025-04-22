@@ -175,7 +175,8 @@ df_escenarios = pd.DataFrame(escenarios_resultados)
 st.table(df_escenarios)
 
 
-
+# --- Comparativa ---
+st.subheader("🎯 Comparativa: Elige la zona a comparar")
 
 
 ZONAS_M30 = {
