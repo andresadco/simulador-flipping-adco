@@ -280,6 +280,3 @@ if os.path.exists("comparables_m30.csv"):
 else:
     st.info("No hay comparables disponibles. Usa el botón para actualizarlos.")
 
-
-
-
