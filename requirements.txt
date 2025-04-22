@@ -1,16 +1,6 @@
 streamlit
 pandas
 numpy
-matplotlib
-streamlit
-fpdf
-numpy
-numpy-financial
-streamlit
-pandas
-matplotlib
-streamlit
-pandas
-numpy
 numpy-financial
 matplotlib
+
