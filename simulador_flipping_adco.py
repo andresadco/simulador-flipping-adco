@@ -11,7 +11,7 @@ import random
 import time
 from bs4 import BeautifulSoup
 
-st.set_page_config(page_title="Simulador Pro ADCO", layout="centered")
+st.set_page_config(page_title="Comparador por Subzona – ADCO", layout="centered")
 st.title("🏘️ Simulador de Flipping Inmobiliario – Versión Avanzada")
 st.caption("Desarrollado por ADCO Investments – andres@adco.es")
 
