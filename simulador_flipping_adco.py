@@ -1,20 +1,4 @@
-
-import streamlit as s
-            st.subheader("📊 Análisis Comparativo €/m²")
-            df_comp = df_result[df_result["€/m²"].apply(lambda x: str(x).replace(",", "").isdigit())]
-            df_comp["€/m²"] = df_comp["€/m²"].astype(str).str.replace(",", "").astype(float)
-            zona_media = df_comp["€/m²"].mean()
-            precio_m2_usuario = precio_venta / superficie if superficie else 0
-            comparacion = precio_m2_usuario - zona_media
-            st.metric("Tu precio por m²", f"{precio_m2_usuario:,.0f} €/m²")
-            st.metric("Media de comparables", f"{zona_media:,.0f} €/m²")
-            if comparacion > 0:
-                st.markdown(f"🔺 Estás **{comparacion:,.0f} €/m² arriba del mercado**")
-            elif comparacion < 0:
-                st.markdown(f"🟢 Estás **{-comparacion:,.0f} €/m² por debajo del mercado**")
-            else:
-                st.markdown("🔹 Estás alineado con el mercado.")
-t
+import streamlit as st
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -221,16 +205,114 @@ def scrape_comparables(zona):
             "User-Agent": random.choice(headers_list),
             "Accept-Language": "es-ES,es;q=0.9"
         }
-                m2 = "0"
-                        break
+
+        try:
+            response = requests.get("http://api.scraperapi.com", params=params, headers=headers, timeout=20)
+            soup = BeautifulSoup(response.text, "html.parser")
+            items = soup.select(".item-info-container")
+
+            for item in items:
+                title = item.select_one("a.item-link").get_text(strip=True)
+                price_tag = item.select_one(".item-price")
+                price = price_tag.get_text(strip=True).replace("€", "").replace(".", "") if price_tag else "0"
+                
+details = item.select(".item-detail")
 m2 = "0"
+for detail in details:
+    if "m²" in detail.get_text():
+        m2 = detail.get_text(strip=True).replace(" m²", "").replace(",", ".")
         break
 
                 m2 = m2_tag.get_text(strip=True).replace(" m²", "").replace(",", ".") if m2_tag else "0"
                 link = "https://www.idealista.com" + item.select_one("a.item-link")["href"]
-                m2 = "0"
-                        break
+                try:
+                    m2_val = float(m2)
+                    price_val = float(price)
+                    eur_m2 = price_val / m2_val if m2_val else 0
+                except:
+                    eur_m2 = 0
+                comparables.append({
+                    "Título": title,
+                    "Precio (€)": price,
+                    "Superficie (m²)": m2,
+                    "€/m²": f"{eur_m2:,.0f}",
+                    "Link": link
+                })
+        except Exception as e:
+            print("Error en scraping:", e)
+
+    df_comparables = pd.DataFrame(comparables)
+    if not df_comparables.empty:
+        df_comparables.to_csv(f"comparables_{zona.lower()}.csv", index=False)
+        return df_comparables
+    return None
+
+
+# --- Botón para Scraping Idealista ---
+st.subheader("🔄 Comparables desde Idealista")
+if st.button("Actualizar comparables desde Idealista"):
+    with st.spinner("Conectando con Idealista y actualizando datos..."):
+        df_new = scrape_comparables(zona)
+        if df_new is not None:
+            st.success(f"{len(df_new)} propiedades encontradas en {zona}.")
+            st.dataframe(df_new)
+        else:
+            st.error("No se pudo obtener información nueva.")
+
+# --- ZONAS DENTRO DE LA M-30 ---
+ZONAS_M30 = {
+    "Chamberí": "https://www.idealista.com/venta-viviendas/madrid/chamberi/",
+    "Salamanca": "https://www.idealista.com/venta-viviendas/madrid/salamanca-madrid/",
+    "Retiro": "https://www.idealista.com/venta-viviendas/madrid/retiro/",
+    "Centro": "https://www.idealista.com/venta-viviendas/madrid/centro-madrid/",
+    "Arganzuela": "https://www.idealista.com/venta-viviendas/madrid/arganzuela/",
+    "Tetuán": "https://www.idealista.com/venta-viviendas/madrid/tetuan/",
+    "Chamartín": "https://www.idealista.com/venta-viviendas/madrid/chamartin/"
+}
+
+st.subheader("📍 Zonas dentro de la M-30")
+zonas_seleccionadas = st.multiselect("Selecciona zonas a scrapear:", options=list(ZONAS_M30.keys()), default=["Chamberí"])
+
+# --- BOTÓN SCRAPING M-30 ---
+def scrape_m30(zonas_dict, seleccionadas):
+    from bs4 import BeautifulSoup
+    import requests, random, time
+
+    scraperapi_key = "c21a8e492547f96ed694f796c0355091"
+    headers_list = [
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
+        "Mozilla/5.0 (X11; Linux x86_64)"
+    ]
+
+    propiedades = []
+
+    for zona in seleccionadas:
+        url_base = zonas_dict[zona]
+        for page in range(1, 3):
+            time.sleep(random.uniform(1.5, 3.0))
+            params = {
+                "api_key": scraperapi_key,
+                "url": f"{url_base}pagina-{page}.htm"
+            }
+            headers = {
+                "User-Agent": random.choice(headers_list),
+                "Accept-Language": "es-ES,es;q=0.9"
+            }
+            try:
+                response = requests.get("http://api.scraperapi.com", params=params, headers=headers, timeout=20)
+                soup = BeautifulSoup(response.text, "html.parser")
+                items = soup.select(".item-info-container")
+                for item in items:
+                    title = item.select_one("a.item-link").get_text(strip=True)
+                    price_tag = item.select_one(".item-price")
+                    price = price_tag.get_text(strip=True).replace("€", "").replace(".", "") if price_tag else "0"
+                    
+details = item.select(".item-detail")
 m2 = "0"
+for detail in details:
+    if "m²" in detail.get_text():
+        m2 = detail.get_text(strip=True).replace(" m²", "").replace(",", ".")
         break
 
                     m2 = m2_tag.get_text(strip=True).replace(" m²", "").replace(",", ".") if m2_tag else "0"
@@ -295,4 +377,6 @@ if os.path.exists("comparables_m30.csv"):
     st.write(df_comp.to_html(index=False, escape=False), unsafe_allow_html=True)
 else:
     st.info("No hay comparables disponibles. Usa el botón para actualizarlos.")
+
+
 
