@@ -62,41 +62,31 @@ gastos_total_compra = (
 inversion_total = gastos_total_compra + coste_reforma_iva
 comision_venta_eur = precio_venta * comision_venta / 100
 
-# Préstamo y flujo real
 monto_prestamo = inversion_total * porcentaje_prestamo / 100
 intereses_totales = monto_prestamo * interes_prestamo / 100 * plazo_anios
 capital_propio = inversion_total - monto_prestamo
 devolucion_prestamo = monto_prestamo
 
-# Flujo de caja
-flujo_neto = [-capital_propio]
-for _ in range(plazo_anios - 1):
-    flujo_neto.append(0)
-flujo_neto.append(precio_venta - comision_venta_eur - intereses_totales - devolucion_prestamo)
-
-ganancia_neta = (
+flujo_neto = [-capital_propio] + [0] * (plazo_anios - 1) + [
     precio_venta - comision_venta_eur - intereses_totales - devolucion_prestamo
-) - capital_propio
+]
+ganancia_neta = flujo_neto[-1] - capital_propio
 roi = (ganancia_neta / capital_propio) * 100 if capital_propio > 0 else 0
 tir = irr(flujo_neto) * 100 if flujo_neto[-1] > 0 else 0
 
-precio_venta_sugerido = (capital_propio * 1.2) + comision_venta_eur + intereses_totales + devolucion_prestamo
+precio_venta_sugerido = capital_propio * 1.2 + comision_venta_eur + intereses_totales + devolucion_prestamo
 
 st.metric("💰 ROI real", f"{roi:.2f}%")
 st.metric("📈 TIR real", f"{tir:.2f}%")
 st.metric("💡 Precio sugerido con 20% ROI", f"{precio_venta_sugerido:,.0f} €")
 
-# --- GRÁFICO BARRAS ---
-st.subheader("📊 Comparación de Costes vs Ganancia")
 fig, ax = plt.subplots()
 ax.bar(["Capital Propio", "Ganancia Neta"], [capital_propio, ganancia_neta], color=["gray", "green"])
 st.pyplot(fig)
 
-
-# --- RESUMEN EJECUTIVO MEJORADO ---
+# --- RESUMEN EJECUTIVO ---
 st.subheader("📋 Resumen Ejecutivo de la Inversión")
 
-# Clasificación de rentabilidad
 if roi < 10:
     interpretacion = "⚠️ Rentabilidad baja"
 elif 10 <= roi <= 20:
@@ -104,14 +94,12 @@ elif 10 <= roi <= 20:
 else:
     interpretacion = "🚀 Rentabilidad excelente"
 
-# Interpretación de inversión
 frase_inversion = (
     f"💬 Este proyecto proyecta una rentabilidad del **{roi:.2f}%** y una TIR del **{tir:.2f}%**. "
     f"Requiere un capital propio estimado de **{capital_propio:,.0f} €** con un préstamo de "
     f"**{monto_prestamo:,.0f} €**. {interpretacion} para inversiones de corto plazo en Madrid."
 )
 
-# Tabla ordenada y más clara
 resumen_data = {
     "Concepto": [
         "🏠 Precio de compra",
@@ -150,12 +138,32 @@ resumen_data = {
         f"{tir:.2f}"
     ]
 }
-
 df_resumen = pd.DataFrame(resumen_data)
 st.dataframe(df_resumen, hide_index=True)
-
-# Mostrar frase resumen
 st.markdown(frase_inversion)
 
+# --- ESCENARIOS DE PRECIO DE VENTA ---
+st.subheader("🎯 Escenarios: ¿Qué pasa si vendes por más o menos?")
 
+delta_precio = st.slider("Variación en el precio de venta (%)", -20, 20, (-10, 10), step=5)
 
+escenarios_resultados = []
+for variacion in range(delta_precio[0], delta_precio[1] + 1, 5):
+    factor = 1 + variacion / 100
+    nuevo_precio_venta = precio_venta * factor
+    nueva_comision_venta = nuevo_precio_venta * comision_venta / 100
+    ingreso_final = nuevo_precio_venta - nueva_comision_venta - intereses_totales - devolucion_prestamo
+    nueva_ganancia_neta = ingreso_final - capital_propio
+    nuevo_roi = (nueva_ganancia_neta / capital_propio * 100) if capital_propio > 0 else 0
+    flujo = [-capital_propio] + [0] * (plazo_anios - 1) + [ingreso_final]
+    nuevo_tir = irr(flujo) * 100 if ingreso_final > 0 else 0
+
+    escenarios_resultados.append({
+        "Variación Precio Venta": f"{variacion:+d}%",
+        "Precio de Venta (€)": f"{nuevo_precio_venta:,.0f}",
+        "ROI (%)": f"{nuevo_roi:.2f}",
+        "TIR (%)": f"{nuevo_tir:.2f}"
+    })
+
+df_escenarios = pd.DataFrame(escenarios_resultados)
+st.table(df_escenarios)
