@@ -177,7 +177,7 @@ from bs4 import BeautifulSoup
 def scrape_comparables(zona):
     ZONA_URLS = {
         "Chamberí": "https://www.idealista.com/venta-viviendas/madrid/chamberi/",
-        "Salamanca": "https://www.idealista.com/venta-viviendas/madrid/salamanca-madrid/",
+        "Salamanca": "https://www.idealista.com/venta-viviendas/madrid/salamanca/",
         "Retiro": "https://www.idealista.com/venta-viviendas/madrid/retiro/"
     }
 
@@ -215,14 +215,7 @@ def scrape_comparables(zona):
                 title = item.select_one("a.item-link").get_text(strip=True)
                 price_tag = item.select_one(".item-price")
                 price = price_tag.get_text(strip=True).replace("€", "").replace(".", "") if price_tag else "0"
-                
-details = item.select(".item-detail")
-m2 = "0"
-for detail in details:
-    if "m²" in detail.get_text():
-        m2 = detail.get_text(strip=True).replace(" m²", "").replace(",", ".")
-        break
-
+                m2_tag = item.select_one(".item-detail")
                 m2 = m2_tag.get_text(strip=True).replace(" m²", "").replace(",", ".") if m2_tag else "0"
                 link = "https://www.idealista.com" + item.select_one("a.item-link")["href"]
                 try:
@@ -262,7 +255,7 @@ if st.button("Actualizar comparables desde Idealista"):
 # --- ZONAS DENTRO DE LA M-30 ---
 ZONAS_M30 = {
     "Chamberí": "https://www.idealista.com/venta-viviendas/madrid/chamberi/",
-    "Salamanca": "https://www.idealista.com/venta-viviendas/madrid/salamanca-madrid/",
+    "Salamanca": "https://www.idealista.com/venta-viviendas/madrid/salamanca/",
     "Retiro": "https://www.idealista.com/venta-viviendas/madrid/retiro/",
     "Centro": "https://www.idealista.com/venta-viviendas/madrid/centro-madrid/",
     "Arganzuela": "https://www.idealista.com/venta-viviendas/madrid/arganzuela/",
@@ -307,14 +300,7 @@ def scrape_m30(zonas_dict, seleccionadas):
                     title = item.select_one("a.item-link").get_text(strip=True)
                     price_tag = item.select_one(".item-price")
                     price = price_tag.get_text(strip=True).replace("€", "").replace(".", "") if price_tag else "0"
-                    
-details = item.select(".item-detail")
-m2 = "0"
-for detail in details:
-    if "m²" in detail.get_text():
-        m2 = detail.get_text(strip=True).replace(" m²", "").replace(",", ".")
-        break
-
+                    m2_tag = item.select_one(".item-detail")
                     m2 = m2_tag.get_text(strip=True).replace(" m²", "").replace(",", ".") if m2_tag else "0"
                     link = "https://www.idealista.com" + item.select_one("a.item-link")["href"]
                     try:
@@ -356,7 +342,6 @@ if os.path.exists("comparables_m30.csv"):
 
     df_comp = pd.read_csv("comparables_m30.csv")
     df_comp["€/m²"] = df_comp["€/m²"].astype(str).str.replace(",", "").astype(float)
-    df_comp = df_comp[df_comp["Superficie (m²)"].astype(str).str.contains(r"^\d", na=False)]
     df_comp["Superficie (m²)"] = df_comp["Superficie (m²)"].astype(str).str.replace(",", ".").astype(float)
 
     media_mercado_m2 = df_comp["€/m²"].mean()
@@ -377,6 +362,5 @@ if os.path.exists("comparables_m30.csv"):
     st.write(df_comp.to_html(index=False, escape=False), unsafe_allow_html=True)
 else:
     st.info("No hay comparables disponibles. Usa el botón para actualizarlos.")
-
 
 
