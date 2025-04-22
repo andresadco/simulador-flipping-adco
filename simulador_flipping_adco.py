@@ -290,9 +290,3 @@ if os.path.exists("comparables_m30.csv"):
     else:
         st.info("Estás **alineado con el mercado** en precio por m².")
 
-    df_comp["Link"] = df_comp["Link"].apply(lambda x: f"<a href='{x}' target='_blank'>Ver anuncio</a>")
-    st.write(df_comp.to_html(index=False, escape=False), unsafe_allow_html=True)
-else:
-    st.info("No hay comparables disponibles. Usa el botón para actualizarlos.")
-
-
