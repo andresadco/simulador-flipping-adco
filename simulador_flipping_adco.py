@@ -1,4 +1,3 @@
-
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -10,7 +9,6 @@ st.set_page_config(page_title="Simulador Pro ADCO", layout="centered")
 st.title("🏘️ Simulador de Flipping Inmobiliario – Versión Avanzada")
 st.caption("Desarrollado por ADCO Investments – andres@adco.es")
 
-# st.image("ADCO_LOGO_SIMPLE.png", width=150)
 
 st.header("📥 Datos del Proyecto")
 
@@ -34,9 +32,9 @@ with st.expander("🏗️ Detalles del Proyecto"):
         itp = st.number_input("ITP o IVA de compra (%)", value=6.0)
         ibi = st.number_input("IBI (€)", value=500)
 
-# Venta
-st.subheader("💰 Precio de Venta y Comisión")
-precio_venta = st.number_input("Precio de venta esperado (€)", value=1350000)
+#  Costo de Venta
+st.subheader("💰Comisión")
+
 comision_venta = st.number_input("Comisión de venta (%)", value=3.0)
 
 # Financiamiento
@@ -119,6 +117,54 @@ if os.path.exists(csv_path):
     st.write(df_comp.to_html(index=False, escape=False), unsafe_allow_html=True)
 else:
     st.warning(f"No hay comparables para {zona}. Haz scraping o súbelos.")
+
+
+# RESUMEN EJECUTIVO
+st.subheader("📋 Resumen Ejecutivo de la Inversión")
+
+resumen_data = {
+    "Concepto": [
+        "Precio de compra",
+        "Comisión de compra",
+        "Gastos legales",
+        "Gastos administrativos",
+        "ITP / IVA de compra",
+        "IBI",
+        "Coste de reforma (con IVA)",
+        "💰 Inversión total",
+        "🏦 Préstamo solicitado",
+        "💸 Intereses del préstamo",
+        "💼 Capital propio invertido",
+        "📈 Precio de venta",
+        "Comisión de venta",
+        "Ganancia neta esperada",
+        "ROI real (%)",
+        "TIR real (%)"
+    ],
+    "Valor estimado (€)": [
+        f"{precio_compra:,.0f}",
+        f"{precio_compra * comision_compra / 100:,.0f}",
+        f"{gastos_legales:,.0f}",
+        f"{gastos_administrativos:,.0f}",
+        f"{precio_compra * itp / 100:,.0f}",
+        f"{ibi:,.0f}",
+        f"{coste_reforma_iva:,.0f}",
+        f"{inversion_total:,.0f}",
+        f"{monto_prestamo:,.0f}",
+        f"{intereses_totales:,.0f}",
+        f"{capital_propio:,.0f}",
+        f"{precio_venta:,.0f}",
+        f"{comision_venta_eur:,.0f}",
+        f"{ganancia_neta:,.0f}",
+        f"{roi:.2f}",
+        f"{tir:.2f}"
+    ]
+}
+
+df_resumen = pd.DataFrame(resumen_data)
+st.dataframe(df_resumen, hide_index=True)
+
+
 
 
 
