@@ -1,14 +1,76 @@
-
-
 import streamlit as st
 import pandas as pd
+import numpy as np
 import requests
 import random
 import time
 from bs4 import BeautifulSoup
 
 st.set_page_config(page_title="Simulador Flipping ADCO", layout="wide")
-st.title("🏘️ Simulador con Comparables Idealista (Zonas M-30)")
+st.title("🏘️ Simulador de Flipping Inmobiliario + Comparables Idealista")
+
+# --- INPUTS DEL SIMULADOR ---
+st.header("📥 Datos del Proyecto")
+
+# Compra
+st.subheader("📌 Compra del Inmueble")
+superficie = st.number_input("Superficie del piso (m²)", value=80)
+ubicacion = st.text_input("Ubicación del piso", value="Madrid")
+precio_compra = st.number_input("Precio de compra propuesto (€)", value=950000)
+comision_compra = st.number_input("Comisión de compra (%)", value=0.0)
+gastos_legales = st.number_input("Gastos legales (€)", value=5000)
+gastos_administrativos = st.number_input("Gastos administrativos (€)", value=3000)
+itp = st.number_input("Impuesto de compra (ITP o IVA) (%)", value=2.0)
+ibi = st.number_input("IBI (€)", value=600.0)
+tasacion = st.number_input("Tasación (€)", value=400.0)
+registro = st.number_input("Registro de la propiedad (€)", value=1000.0)
+
+# Reforma
+st.subheader("🔨 Reforma del Inmueble")
+superficie_reforma = st.number_input("Superficie a reformar (m²)", value=80)
+coste_reforma_m2 = st.number_input("Coste por m² de reforma (€)", value=1500)
+costes_adicionales = st.number_input("Costes adicionales de reforma (€)", value=5000)
+iva_reforma = st.number_input("IVA en reformas (%)", value=10.0)
+
+# Venta
+st.subheader("💰 Venta del Inmueble")
+comision_venta = st.number_input("Comisión de venta (%)", value=3.0)
+
+# Financiamiento
+st.subheader("🏦 Financiamiento")
+usar_deuda = st.selectbox("¿Usar financiamiento?", ["No", "Sí"])
+if usar_deuda == "Sí":
+    porcentaje_prestamo = st.number_input("Monto del préstamo (% sobre compra)", value=70.0)
+    tasa_interes = st.number_input("Tasa de interés (%)", value=4.0)
+    plazo = st.number_input("Plazo del préstamo (años)", value=1)
+
+# Cálculos
+coste_reforma_total = superficie_reforma * coste_reforma_m2 + costes_adicionales
+coste_reforma_total_iva = coste_reforma_total * (1 + iva_reforma / 100)
+gastos_totales = (
+    precio_compra +
+    precio_compra * comision_compra / 100 +
+    gastos_legales +
+    gastos_administrativos +
+    precio_compra * itp / 100 +
+    ibi +
+    tasacion +
+    registro +
+    coste_reforma_total_iva
+)
+precio_venta_minimo = gastos_totales * 1.2
+precio_venta = st.number_input("Precio de venta propuesto (€)", value=int(precio_venta_minimo))
+
+# Resultado
+ganancia_neta = precio_venta - gastos_totales
+roi_total = (ganancia_neta / gastos_totales) * 100
+
+st.subheader("📊 Resultados")
+st.metric("Ganancia neta del proyecto", f"{ganancia_neta:,.2f} €")
+st.metric("ROI total", f"{roi_total:.2f} %")
+
+# --- SCRAPING IDEALISTA ---
+st.header("🏘️ Comparables Idealista")
 
 ZONAS_M30 = {
     "Chamberí": "https://www.idealista.com/venta-viviendas/madrid/chamberi/",
@@ -33,7 +95,7 @@ def scrapear_idealista(zonas):
 
     for zona in zonas:
         url_base = ZONAS_M30[zona]
-        for page in range(1, 3):
+        for page in range(1, 2):
             time.sleep(random.uniform(1.5, 3.0))
             params = {
                 "api_key": scraperapi_key,
@@ -70,7 +132,7 @@ def scrapear_idealista(zonas):
                         "Título": title,
                         "Precio (€)": price,
                         "Superficie (m²)": m2,
-                        "€/m²": f"{eur_m2:,.0f}",
+                        "€/m²": round(eur_m2),
                         "Link": link
                     })
             except Exception as e:
@@ -83,9 +145,9 @@ if st.button("🔄 Obtener comparables ahora"):
     with st.spinner("Obteniendo datos desde Idealista..."):
         df_result = scrapear_idealista(zonas_seleccionadas)
         if not df_result.empty:
-            df_result["Link"] = df_result["Link"].apply(lambda x: f"[Ver anuncio]({x})")
             st.success(f"Se obtuvieron {len(df_result)} propiedades.")
-            st.write(df_result.to_markdown(index=False), unsafe_allow_html=True)
+            st.dataframe(df_result)
         else:
             st.error("No se encontraron resultados.")
+
 
