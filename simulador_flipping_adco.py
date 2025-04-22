@@ -260,7 +260,7 @@ if st.button("🔄 Obtener comparables ahora"):
 
 
 
-st.set_page_config(page_title="Comparador por Subzona – ADCO", layout="centered")
+
 st.title("🏘️ Comparador de Subzonas – Idealista + ADCO")
 st.caption("Obtén datos precisos de comparables reales por subzona")
 
