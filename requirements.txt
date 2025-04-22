@@ -5,5 +5,5 @@ numpy-financial
 matplotlib
 requests
 beautifulsoup4
-
+tabulate
 
