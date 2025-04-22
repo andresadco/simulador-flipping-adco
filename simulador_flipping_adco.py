@@ -74,7 +74,9 @@ for _ in range(plazo_anios - 1):
     flujo_neto.append(0)
 flujo_neto.append(precio_venta - comision_venta_eur - intereses_totales - devolucion_prestamo)
 
-ganancia_neta = flujo_neto[-1]
+ganancia_neta = (
+    precio_venta - comision_venta_eur - intereses_totales - devolucion_prestamo
+) - capital_propio
 roi = (ganancia_neta / capital_propio) * 100 if capital_propio > 0 else 0
 tir = irr(flujo_neto) * 100 if flujo_neto[-1] > 0 else 0
 
