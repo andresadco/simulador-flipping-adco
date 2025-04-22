@@ -90,34 +90,51 @@ fig, ax = plt.subplots()
 ax.bar(["Capital Propio", "Ganancia Neta"], [capital_propio, ganancia_neta], color=["gray", "green"])
 st.pyplot(fig)
 
-# --- RESUMEN EJECUTIVO ---
+
+# --- RESUMEN EJECUTIVO MEJORADO ---
 st.subheader("📋 Resumen Ejecutivo de la Inversión")
 
+# Clasificación de rentabilidad
+if roi < 10:
+    interpretacion = "⚠️ Rentabilidad baja"
+elif 10 <= roi <= 20:
+    interpretacion = "✅ Rentabilidad aceptable"
+else:
+    interpretacion = "🚀 Rentabilidad excelente"
+
+# Interpretación de inversión
+frase_inversion = (
+    f"💬 Este proyecto proyecta una rentabilidad del **{roi:.2f}%** y una TIR del **{tir:.2f}%**. "
+    f"Requiere un capital propio estimado de **{capital_propio:,.0f} €** con un préstamo de "
+    f"**{monto_prestamo:,.0f} €**. {interpretacion} para inversiones de corto plazo en Madrid."
+)
+
+# Tabla ordenada y más clara
 resumen_data = {
     "Concepto": [
-        "Precio de compra",
-        "Comisión de compra",
-        "Gastos legales",
-        "Gastos administrativos",
-        "ITP / IVA de compra",
-        "IBI",
-        "Coste de reforma (con IVA)",
-        "💰 Inversión total",
+        "🏠 Precio de compra",
+        "🏠 Comisión de compra",
+        "🏠 ITP / IVA de compra",
+        "🏠 Gastos legales",
+        "🏠 Gastos administrativos",
+        "🏠 IBI",
+        "🛠️ Coste de reforma (con IVA)",
+        "💼 Inversión total",
         "🏦 Préstamo solicitado",
         "💸 Intereses del préstamo",
         "💼 Capital propio invertido",
         "📈 Precio de venta",
-        "Comisión de venta",
-        "Ganancia neta esperada",
-        "ROI real (%)",
-        "TIR real (%)"
+        "📈 Comisión de venta",
+        "📊 Ganancia neta esperada",
+        "📊 ROI real (%)",
+        "📊 TIR real (%)"
     ],
     "Valor estimado (€)": [
         f"{precio_compra:,.0f}",
         f"{precio_compra * comision_compra / 100:,.0f}",
+        f"{precio_compra * itp / 100:,.0f}",
         f"{gastos_legales:,.0f}",
         f"{gastos_administrativos:,.0f}",
-        f"{precio_compra * itp / 100:,.0f}",
         f"{ibi:,.0f}",
         f"{coste_reforma_iva:,.0f}",
         f"{inversion_total:,.0f}",
@@ -135,14 +152,8 @@ resumen_data = {
 df_resumen = pd.DataFrame(resumen_data)
 st.dataframe(df_resumen, hide_index=True)
 
-# --- COMPARABLES ---
-csv_path = f"comparables_{zona.lower()}.csv"
-if os.path.exists(csv_path):
-    st.subheader(f"🏘️ Comparables en {zona}")
-    df_comp = pd.read_csv(csv_path)
-    df_comp["Link"] = df_comp["Link"].apply(lambda x: f"<a href='{x}' target='_blank'>Ver anuncio</a>")
-    st.write(df_comp.to_html(index=False, escape=False), unsafe_allow_html=True)
-else:
-    st.warning(f"No hay comparables para {zona}. Haz scraping o súbelos.")
+# Mostrar frase resumen
+st.markdown(frase_inversion)
+
 
 
