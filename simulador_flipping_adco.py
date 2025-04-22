@@ -1,15 +1,16 @@
+
 import streamlit as st
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-from numpy_financial import irr  # ✅ solución moderna para calcular TIR
+from numpy_financial import irr
 
 st.set_page_config(page_title="Simulador Pro ADCO", layout="centered")
 st.title("🏘️ Simulador de Flipping Inmobiliario – Versión Avanzada")
 st.caption("Desarrollado por ADCO Investments – andres@adco.es")
 
-
+# st.image("ADCO_LOGO_SIMPLE.png", width=150)
 
 st.header("📥 Datos del Proyecto")
 
@@ -56,16 +57,27 @@ gastos_total_compra = (
 )
 inversion_total = gastos_total_compra + coste_reforma_iva
 comision_venta_eur = precio_venta * comision_venta / 100
-ganancia_neta = precio_venta - comision_venta_eur - inversion_total
 
-roi = ganancia_neta / inversion_total * 100
-tir = irr([-inversion_total, precio_venta - comision_venta_eur]) * 100 if (precio_venta - comision_venta_eur) > 0 else 0
+# Capital propio invertido
+capital_propio = inversion_total * (1 - porcentaje_prestamo / 100)
 
-# Precio sugerido con ROI 20%
-precio_venta_sugerido = (inversion_total * 1.2) + comision_venta_eur
+# Costo de préstamo
+monto_prestamo = inversion_total * porcentaje_prestamo / 100
+intereses_totales = monto_prestamo * interes_prestamo / 100 * plazo_anios
 
-st.metric("💰 ROI total", f"{roi:.2f}%")
-st.metric("📈 TIR estimada", f"{tir:.2f}%")
+# Flujo de caja neto para el inversionista (después de intereses)
+flujo_neto = [-capital_propio, precio_venta - comision_venta_eur - intereses_totales]
+
+# ROI y TIR con préstamo
+ganancia_neta = flujo_neto[1]
+roi = ganancia_neta / capital_propio * 100 if capital_propio > 0 else 0
+tir = irr(flujo_neto) * 100 if flujo_neto[1] > 0 else 0
+
+# Precio sugerido para ROI 20%
+precio_venta_sugerido = (capital_propio * 1.2) + comision_venta_eur + intereses_totales
+
+st.metric("💰 ROI real (con préstamo)", f"{roi:.2f}%")
+st.metric("📈 TIR real", f"{tir:.2f}%")
 st.metric("💡 Precio sugerido con 20% ROI", f"{precio_venta_sugerido:,.0f} €")
 
 # --- ANÁLISIS DE SENSIBILIDAD ---
@@ -80,9 +92,12 @@ for vp in variaciones_precio:
         nuevo_precio_venta = precio_venta * (1 + vp)
         nuevo_coste_reforma = coste_reforma * (1 + vr)
         nuevo_total = gastos_total_compra + nuevo_coste_reforma * (1 + iva_reforma / 100)
-        nuevo_ganancia = nuevo_precio_venta - nuevo_precio_venta * comision_venta / 100 - nuevo_total
-        nuevo_roi = nuevo_ganancia / nuevo_total * 100
-        flujo = [-nuevo_total, nuevo_precio_venta - nuevo_precio_venta * comision_venta / 100]
+        nuevo_capital = nuevo_total * (1 - porcentaje_prestamo / 100)
+        nuevo_intereses = nuevo_total * (porcentaje_prestamo / 100) * interes_prestamo / 100 * plazo_anios
+        nuevo_ingreso = nuevo_precio_venta - nuevo_precio_venta * comision_venta / 100 - nuevo_intereses
+        nuevo_ganancia = nuevo_ingreso - nuevo_capital
+        nuevo_roi = nuevo_ganancia / nuevo_capital * 100 if nuevo_capital > 0 else 0
+        flujo = [-nuevo_capital, nuevo_ingreso]
         nuevo_tir = irr(flujo) * 100 if flujo[1] > 0 else 0
         resultados.append([f"{int(vp*100)}%", f"{int(vr*100)}%", round(nuevo_roi, 2), round(nuevo_tir, 2)])
 
@@ -92,7 +107,7 @@ st.dataframe(df_sens)
 # --- GRÁFICO BARRAS ---
 st.subheader("📊 Comparación de Costes vs Ganancia")
 fig, ax = plt.subplots()
-ax.bar(["Inversión Total", "Ganancia Neta"], [inversion_total, ganancia_neta], color=["gray", "green"])
+ax.bar(["Capital Propio", "Ganancia Neta"], [capital_propio, ganancia_neta], color=["gray", "green"])
 st.pyplot(fig)
 
 # --- COMPARABLES (CSV dinámico) ---
