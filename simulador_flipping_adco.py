@@ -280,7 +280,6 @@ if st.button("🔍 Obtener comparables de la subzona"):
 if "df_subzona" in st.session_state:
     df_subzona = st.session_state["df_subzona"]
 
-    st.subheader("📊 Análisis de Comparables")
 
     df_subzona["€/m²"] = df_subzona["€/m²"].str.replace(",", "").astype(float)
     df_subzona["Superficie (m²)"] = df_subzona["Superficie (m²)"].astype(str).str.replace(",", ".").astype(float)
