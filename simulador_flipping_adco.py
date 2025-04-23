@@ -182,7 +182,7 @@ st.caption("Obtén datos precisos de comparables reales por subzona")
 SUBZONAS_M30 = {
     "Chamberí": {
         "Almagro": "https://www.idealista.com/venta-viviendas/madrid/chamberi/almagro/",
-        "Trafalgar": "https://www.idealista.com/venta-viviendas/madrid/trafalgar/",
+        "Trafalgar": "https://www.idealista.com/venta-viviendas/madrid/chamberi/trafalgar/",
         "Ríos Rosas": "https://www.idealista.com/venta-viviendas/madrid/chamberi/rios-rosas/",
         "Arapiles": "https://www.idealista.com/venta-viviendas/madrid/chamberi/arapiles/",
         "Vallehermoso": "https://www.idealista.com/venta-viviendas/madrid/chamberi/vallehermoso/",
@@ -265,93 +265,14 @@ def scrapear_subzona(nombre, url_base):
     return pd.DataFrame(propiedades)
 
 # Botón para lanzar el scraping
-def scrapear_subzona(nombre, url_base):
-    scraperapi_key = "c21a8e492547f96ed694f796c0355091"
-    headers_list = [
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
-        "Mozilla/5.0 (X11; Linux x86_64)"
-    ]
-    propiedades = []
-
-    for page in range(1, 3):
-        time.sleep(random.uniform(1.5, 3.0))
-        params = {
-            "api_key": scraperapi_key,
-            "url": f"{url_base}pagina-{page}.htm"
-        }
-        headers = {
-            "User-Agent": random.choice(headers_list),
-            "Accept-Language": "es-ES,es;q=0.9"
-        }
-
-        intento = 0
-        exito = False
-        while intento < 2 and not exito:
-            try:
-                response = requests.get("http://api.scraperapi.com", params=params, headers=headers, timeout=30)
-                soup = BeautifulSoup(response.text, "html.parser")
-                items = soup.select(".item-info-container")
-                for item in items:
-                    title = item.select_one("a.item-link").get_text(strip=True)
-                    price_tag = item.select_one(".item-price")
-                    price = price_tag.get_text(strip=True).replace("€", "").replace(".", "") if price_tag else "0"
-                    details = item.select(".item-detail")
-                    m2 = "0"
-                    for detail in details:
-                        text = detail.get_text(strip=True)
-                        if "m²" in text:
-                            m2 = text.split("m²")[0].strip().replace(",", ".")
-                            break
-                    link = "https://www.idealista.com" + item.select_one("a.item-link")["href"]
-                    try:
-                        m2_val = float(m2) if m2.replace('.', '', 1).isdigit() else 0
-                        price_val = float(price)
-                        eur_m2 = price_val / m2_val if m2_val else 0
-                    except:
-                        eur_m2 = 0
-                    propiedades.append({
-                        "Subzona": nombre,
-                        "Título": title,
-                        "Precio (€)": price,
-                        "Superficie (m²)": m2,
-                        "€/m²": f"{eur_m2:,.0f}",
-                        "Link": link
-                    })
-                exito = True
-            except Exception as e:
-                intento += 1
-                if intento >= 2:
-                    st.warning(f"Error al scrapear {nombre}: {e}")
-
-    return pd.DataFrame(propiedades)
-
-
-
-
-# --- Análisis de Comparables Obtenidos ---
-st.subheader("📊 Análisis de Comparables")
-
-if not df_subzona.empty:
-    # Conversión para cálculo
-    df_subzona["€/m²"] = df_subzona["€/m²"].str.replace(",", "").astype(float)
-    df_subzona["Superficie (m²)"] = df_subzona["Superficie (m²)"].astype(str).str.replace(",", ".").astype(float)
-
-    promedio = df_subzona["€/m²"].mean()
-    minimo = df_subzona["€/m²"].min()
-    maximo = df_subzona["€/m²"].max()
-
-    st.metric("📍 Promedio €/m²", f"{promedio:,.0f} €")
-    st.metric("📉 Mínimo €/m²", f"{minimo:,.0f} €")
-    st.metric("📈 Máximo €/m²", f"{maximo:,.0f} €")
-
-    # Filtro por rango si se desea
-    st.subheader("🎛️ Filtro de comparables por €/m²")
-    rango = st.slider("Selecciona el rango €/m²", int(minimo), int(maximo), (int(minimo), int(maximo)))
-
-    df_filtrado = df_subzona[(df_subzona["€/m²"] >= rango[0]) & (df_subzona["€/m²"] <= rango[1])]
-    df_filtrado["Link"] = df_filtrado["Link"].apply(lambda x: f"[Ver anuncio]({x})")
-
-    st.write(f"🔎 Se muestran {len(df_filtrado)} propiedades dentro del rango seleccionado.")
-    st.write(df_filtrado.to_markdown(index=False), unsafe_allow_html=True)
+if st.button("🔍 Obtener comparables de la subzona"):
+    with st.spinner("Consultando Idealista..."):
+        url = SUBZONAS_M30[zona][subzona]
+        df_subzona = scrapear_subzona(subzona, url)
+        if not df_subzona.empty:
+            df_subzona["Link"] = df_subzona["Link"].apply(lambda x: f"[Ver anuncio]({x})")
+            st.success(f"Se obtuvieron {len(df_subzona)} propiedades en {subzona}")
+            st.write(df_subzona.to_markdown(index=False), unsafe_allow_html=True)
+        else:
+            st.error("No se encontraron comparables.")
 
