@@ -303,7 +303,7 @@ if "df_subzona" in st.session_state:
 
 
         # --- Análisis de Comparables Obtenidos ---
-        st.subheader("📊 Análisis de Comparables")
+        
 
         if not df_subzona.empty:
             # Conversión para cálculo
