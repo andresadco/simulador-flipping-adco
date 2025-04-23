@@ -182,7 +182,7 @@ st.caption("Obtén datos precisos de comparables reales por subzona")
 SUBZONAS_M30 = {
     "Chamberí": {
         "Almagro": "https://www.idealista.com/venta-viviendas/madrid/chamberi/almagro/",
-        "Trafalgar": "https://www.idealista.com/venta-viviendas/madrid/chamberi/trafalgar/",
+        "Trafalgar": "https://www.idealista.com/venta-viviendas/madrid/trafalgar/",
         "Ríos Rosas": "https://www.idealista.com/venta-viviendas/madrid/chamberi/rios-rosas/",
         "Arapiles": "https://www.idealista.com/venta-viviendas/madrid/chamberi/arapiles/",
         "Vallehermoso": "https://www.idealista.com/venta-viviendas/madrid/chamberi/vallehermoso/",
