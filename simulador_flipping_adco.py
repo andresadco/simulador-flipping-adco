@@ -275,4 +275,29 @@ if st.button("🔍 Obtener comparables de la subzona"):
             st.write(df_subzona.to_markdown(index=False), unsafe_allow_html=True)
         else:
             st.error("No se encontraron comparables.")
+        # --- Análisis de Comparables Obtenidos ---
+        st.subheader("📊 Análisis de Comparables")
+
+        if not df_subzona.empty:
+            # Conversión para cálculo
+            df_subzona["€/m²"] = df_subzona["€/m²"].str.replace(",", "").astype(float)
+            df_subzona["Superficie (m²)"] = df_subzona["Superficie (m²)"].astype(str).str.replace(",", ".").astype(float)
+
+            promedio = df_subzona["€/m²"].mean()
+            minimo = df_subzona["€/m²"].min()
+            maximo = df_subzona["€/m²"].max()
+
+            st.metric("📍 Promedio €/m²", f"{promedio:,.0f} €")
+            st.metric("📉 Mínimo €/m²", f"{minimo:,.0f} €")
+            st.metric("📈 Máximo €/m²", f"{maximo:,.0f} €")
+
+            # Filtro por rango si se desea
+            st.subheader("🎛️ Filtro de comparables por €/m²")
+            rango = st.slider("Selecciona el rango €/m²", int(minimo), int(maximo), (int(minimo), int(maximo)))
+
+            df_filtrado = df_subzona[(df_subzona["€/m²"] >= rango[0]) & (df_subzona["€/m²"] <= rango[1])]
+            df_filtrado["Link"] = df_filtrado["Link"].apply(lambda x: f"[Ver anuncio]({x})")
+
+            st.write(f"🔎 Se muestran {len(df_filtrado)} propiedades dentro del rango seleccionado.")
+            st.write(df_filtrado.to_markdown(index=False), unsafe_allow_html=True)
 
