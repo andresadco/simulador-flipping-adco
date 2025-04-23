@@ -123,3 +123,55 @@ for variacion in range(delta_precio[0], delta_precio[1] + 1, 5):
 st.table(pd.DataFrame(escenarios_resultados))
 
 
+# --- Comparador por Subzona ---
+...
+
+if st.button("🔍 Obtener comparables de la subzona"):
+    ...
+    st.session_state["df_subzona"] = df
+
+if "df_subzona" in st.session_state:
+    df_subzona = st.session_state["df_subzona"]
+    st.subheader("📊 Análisis de Comparables")
+
+    try:
+        df_subzona["€/m²"] = (
+            df_subzona["€/m²"].astype(str)
+            .str.replace(",", "", regex=False)
+            .str.extract(r"(\d+\.?\d*)")[0]
+            .astype(float)
+        )
+
+        df_subzona["Superficie (m²)"] = (
+            df_subzona["Superficie (m²)"]
+            .astype(str)
+            .str.replace(",", ".", regex=False)
+            .str.extract(r"(\d+\.?\d*)")[0]
+            .astype(float)
+        )
+
+        promedio = df_subzona["€/m²"].mean()
+        minimo = df_subzona["€/m²"].min()
+        maximo = df_subzona["€/m²"].max()
+
+        st.metric("📍 Promedio €/m²", f"{promedio:,.0f} €")
+        st.metric("📉 Mínimo €/m²", f"{minimo:,.0f} €")
+        st.metric("📈 Máximo €/m²", f"{maximo:,.0f} €")
+
+        st.subheader("🎛️ Filtro de comparables por €/m²")
+        rango = st.slider(
+            "Selecciona el rango €/m²",
+            min_value=int(minimo),
+            max_value=int(maximo),
+            value=(int(minimo), int(maximo)),
+            key="slider_comparables"
+        )
+
+        df_filtrado = df_subzona[(df_subzona["€/m²"] >= rango[0]) & (df_subzona["€/m²"] <= rango[1])].copy()
+        df_filtrado["Link"] = df_filtrado["Link"].apply(lambda x: f"[Ver anuncio]({x})")
+
+        st.write(f"🔎 Se muestran {len(df_filtrado)} propiedades dentro del rango seleccionado.")
+        st.write(df_filtrado.to_markdown(index=False), unsafe_allow_html=True)
+
+    except Exception as e:
+        st.error(f"Error procesando comparables: {e}")
