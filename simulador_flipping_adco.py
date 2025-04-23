@@ -268,13 +268,40 @@ def scrapear_subzona(nombre, url_base):
 if st.button("🔍 Obtener comparables de la subzona"):
     with st.spinner("Consultando Idealista..."):
         url = SUBZONAS_M30[zona][subzona]
-        df_subzona = scrapear_subzona(subzona, url)
-        if not df_subzona.empty:
-            df_subzona["Link"] = df_subzona["Link"].apply(lambda x: f"[Ver anuncio]({x})")
-            st.success(f"Se obtuvieron {len(df_subzona)} propiedades en {subzona}")
-            st.write(df_subzona.to_markdown(index=False), unsafe_allow_html=True)
+        df_resultado = scrapear_subzona(subzona, url)
+        if not df_resultado.empty:
+            df_resultado["Link"] = df_resultado["Link"].apply(lambda x: f"[Ver anuncio]({x})")
+            st.session_state["df_subzona"] = df_resultado
+            st.success(f"Se obtuvieron {len(df_resultado)} propiedades en {subzona}")
         else:
             st.error("No se encontraron comparables.")
+
+# Si ya hay datos guardados en sesión, los mostramos
+if "df_subzona" in st.session_state:
+    df_subzona = st.session_state["df_subzona"]
+
+    st.subheader("📊 Análisis de Comparables")
+
+    df_subzona["€/m²"] = df_subzona["€/m²"].str.replace(",", "").astype(float)
+    df_subzona["Superficie (m²)"] = df_subzona["Superficie (m²)"].astype(str).str.replace(",", ".").astype(float)
+
+    promedio = df_subzona["€/m²"].mean()
+    minimo = df_subzona["€/m²"].min()
+    maximo = df_subzona["€/m²"].max()
+
+    st.metric("📍 Promedio €/m²", f"{promedio:,.0f} €")
+    st.metric("📉 Mínimo €/m²", f"{minimo:,.0f} €")
+    st.metric("📈 Máximo €/m²", f"{maximo:,.0f} €")
+
+    st.subheader("🎛️ Filtro de comparables por €/m²")
+    rango = st.slider("Selecciona el rango €/m²", int(minimo), int(maximo), (int(minimo), int(maximo)))
+
+    df_filtrado = df_subzona[(df_subzona["€/m²"] >= rango[0]) & (df_subzona["€/m²"] <= rango[1])]
+    df_filtrado["Link"] = df_filtrado["Link"].apply(lambda x: f"[Ver anuncio]({x})")
+
+    st.write(f"🔎 Se muestran {len(df_filtrado)} propiedades dentro del rango seleccionado.")
+    st.write(df_filtrado.to_markdown(index=False), unsafe_allow_html=True)
+
         # --- Análisis de Comparables Obtenidos ---
         st.subheader("📊 Análisis de Comparables")
 
