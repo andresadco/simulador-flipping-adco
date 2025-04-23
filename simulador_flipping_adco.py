@@ -302,6 +302,7 @@ if "df_subzona" in st.session_state:
     st.write(f"🔎 Se muestran {len(df_filtrado)} propiedades dentro del rango seleccionado.")
     st.write(df_filtrado.to_markdown(index=False), unsafe_allow_html=True)
 
+
         # --- Análisis de Comparables Obtenidos ---
         st.subheader("📊 Análisis de Comparables")
 
