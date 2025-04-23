@@ -265,7 +265,7 @@ def scrapear_subzona(nombre, url_base):
     return pd.DataFrame(propiedades)
 
 # Botón para lanzar el scraping
-ef scrapear_subzona(nombre, url_base):
+def scrapear_subzona(nombre, url_base):
     scraperapi_key = "c21a8e492547f96ed694f796c0355091"
     headers_list = [
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
