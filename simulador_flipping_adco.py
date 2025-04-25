@@ -234,6 +234,29 @@ def scrapear_subzona(nombre, url_base):
             response = requests.get("http://api.scraperapi.com", params=params, headers=headers, timeout=20)
             soup = BeautifulSoup(response.text, "html.parser")
             items = soup.select(".item-info-container")
+           def scrapear_subzona(nombre, url_base):
+    scraperapi_key = "c21a8e492547f96ed694f796c0355091"
+    headers_list = [
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
+        "Mozilla/5.0 (X11; Linux x86_64)"
+    ]
+    propiedades = []
+
+    for page in range(1, 3):
+        time.sleep(random.uniform(1.5, 3.0))
+        params = {
+            "api_key": scraperapi_key,
+            "url": f"{url_base}pagina-{page}.htm"
+        }
+        headers = {
+            "User-Agent": random.choice(headers_list),
+            "Accept-Language": "es-ES,es;q=0.9"
+        }
+        try:
+            response = requests.get("http://api.scraperapi.com", params=params, headers=headers, timeout=20)
+            soup = BeautifulSoup(response.text, "html.parser")
+            items = soup.select(".item-info-container")
             for item in items:
                 title = item.select_one("a.item-link").get_text(strip=True)
                 price_tag = item.select_one(".item-price")
@@ -282,39 +305,38 @@ def scrapear_subzona(nombre, url_base):
 if "df_subzona" in st.session_state:
     df_subzona = st.session_state["df_subzona"]
 
-    with st.expander("📊 Análisis de Comparables", expanded=True):
-        try:
-            df_subzona["€/m²"] = df_subzona["€/m²"].astype(str).str.replace(",", "").astype(float)
-            df_subzona["Superficie (m²)"] = df_subzona["Superficie (m²)"].astype(str).str.replace(",", ".").astype(float)
+    try:
+        st.subheader("📊 Análisis de Comparables")
+        df_subzona["€/m²"] = df_subzona["€/m²"].astype(str).str.replace(",", "").astype(float)
+        df_subzona["Superficie (m²)"] = df_subzona["Superficie (m²)"].astype(str).str.replace(",", ".").astype(float)
 
-            promedio = df_subzona["€/m²"].mean()
-            minimo = df_subzona["€/m²"].min()
-            maximo = df_subzona["€/m²"].max()
+        promedio = df_subzona["€/m²"].mean()
+        minimo = df_subzona["€/m²"].min()
+        maximo = df_subzona["€/m²"].max()
 
-            st.metric("📍 Promedio €/m²", f"{promedio:,.0f} €")
-            st.metric("📉 Mínimo €/m²", f"{minimo:,.0f} €")
-            st.metric("📈 Máximo €/m²", f"{maximo:,.0f} €")
+        st.metric("📍 Promedio €/m²", f"{promedio:,.0f} €")
+        st.metric("📉 Mínimo €/m²", f"{minimo:,.0f} €")
+        st.metric("📈 Máximo €/m²", f"{maximo:,.0f} €")
 
-            st.subheader("🎛️ Filtro de comparables por €/m²")
-            rango = st.slider("Selecciona el rango €/m²", int(minimo), int(maximo), (int(minimo), int(maximo)), key="slider_comparables")
-            df_filtrado = df_subzona[(df_subzona["€/m²"] >= rango[0]) & (df_subzona["€/m²"] <= rango[1])]
+        st.subheader("🎛️ Filtro de comparables por €/m²")
+        rango = st.slider("Selecciona el rango €/m²", int(minimo), int(maximo), (int(minimo), int(maximo)), key="slider_comparables")
+        df_filtrado = df_subzona[(df_subzona["€/m²"] >= rango[0]) & (df_subzona["€/m²"] <= rango[1])]
 
-            # Filtros adicionales
-            with st.expander("🔍 Filtros adicionales"):
-                ascensor_op = st.multiselect("Ascensor", options=df_filtrado["Ascensor"].unique(), default=list(df_filtrado["Ascensor"].unique()))
-                estado_op = st.multiselect("Estado del piso", options=df_filtrado["Estado"].unique(), default=list(df_filtrado["Estado"].unique()))
-                planta_op = st.multiselect("Planta", options=df_filtrado["Planta"].unique(), default=list(df_filtrado["Planta"].unique()))
+        # Filtros adicionales
+        ascensor_op = st.multiselect("Ascensor", options=df_filtrado["Ascensor"].unique(), default=list(df_filtrado["Ascensor"].unique()))
+        estado_op = st.multiselect("Estado del piso", options=df_filtrado["Estado"].unique(), default=list(df_filtrado["Estado"].unique()))
+        planta_op = st.multiselect("Planta", options=df_filtrado["Planta"].unique(), default=list(df_filtrado["Planta"].unique()))
 
-            df_filtrado = df_filtrado[df_filtrado["Ascensor"].isin(ascensor_op)]
-            df_filtrado = df_filtrado[df_filtrado["Estado"].isin(estado_op)]
-            df_filtrado = df_filtrado[df_filtrado["Planta"].isin(planta_op)]
+        df_filtrado = df_filtrado[df_filtrado["Ascensor"].isin(ascensor_op)]
+        df_filtrado = df_filtrado[df_filtrado["Estado"].isin(estado_op)]
+        df_filtrado = df_filtrado[df_filtrado["Planta"].isin(planta_op)]
 
-            df_filtrado["Link"] = df_filtrado["Link"].apply(lambda x: f"[Ver anuncio]({x})")
-            st.write(f"🔎 Se muestran {len(df_filtrado)} propiedades dentro del rango seleccionado y filtros aplicados.")
-            st.write(df_filtrado.to_markdown(index=False), unsafe_allow_html=True)
+        df_filtrado["Link"] = df_filtrado["Link"].apply(lambda x: f"[Ver anuncio]({x})")
+        st.write(f"🔎 Se muestran {len(df_filtrado)} propiedades dentro del rango seleccionado y filtros aplicados.")
+        st.write(df_filtrado.to_markdown(index=False), unsafe_allow_html=True)
 
-        except Exception as e:
-            st.error(f"Error procesando comparables: {e}")
+    except Exception as e:
+        st.error(f"Error procesando comparables: {e}")
             # Botón para lanzar el scraping
 if st.button("🔍 Obtener comparables de la subzona"):
     with st.spinner("Consultando Idealista..."):
