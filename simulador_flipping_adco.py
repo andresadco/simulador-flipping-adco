@@ -201,8 +201,8 @@ SUBZONAS_M30 = {
         "Chueca Justicia": "https://www.idealista.com/venta-viviendas/madrid/centro/chueca-justicia/",
         "Malasaña-Universidad": "https://www.idealista.com/venta-viviendas/madrid/centro/malasana-universidad/",
         "Lavapiés Embajadores": "https://www.idealista.com/venta-viviendas/madrid/centro/lavapies-embajadores/",
-       "Huertas Cortes": https://www.idealista.com/venta-viviendas/madrid/centro/huertas-cortes/
-         "Palacio": https://www.idealista.com/venta-viviendas/madrid/centro/palacio/
+        "Huertas Cortes": "https://www.idealista.com/venta-viviendas/madrid/centro/huertas-cortes/",
+         "Palacio": "https://www.idealista.com/venta-viviendas/madrid/centro/palacio/"
         
     }
 }
