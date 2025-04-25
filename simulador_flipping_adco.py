@@ -234,32 +234,46 @@ def scrapear_subzona(nombre, url_base):
             response = requests.get("http://api.scraperapi.com", params=params, headers=headers, timeout=20)
             soup = BeautifulSoup(response.text, "html.parser")
             items = soup.select(".item-info-container")
-            for item in items:
-                title = item.select_one("a.item-link").get_text(strip=True)
-                price_tag = item.select_one(".item-price")
-                price = price_tag.get_text(strip=True).replace("€", "").replace(".", "") if price_tag else "0"
-                details = item.select(".item-detail")
-                m2 = "0"
-                for detail in details:
-                    text = detail.get_text(strip=True)
-                    if "m²" in text:
-                        m2 = text.split("m²")[0].strip().replace(",", ".")
-                        break
-                link = "https://www.idealista.com" + item.select_one("a.item-link")["href"]
-                try:
-                    m2_val = float(m2) if m2.replace('.', '', 1).isdigit() else 0
-                    price_val = float(price)
-                    eur_m2 = price_val / m2_val if m2_val else 0
-                except:
-                    eur_m2 = 0
-                propiedades.append({
-                    "Subzona": nombre,
-                    "Título": title,
-                    "Precio (€)": price,
-                    "Superficie (m²)": m2,
-                    "€/m²": f"{eur_m2:,.0f}",
-                    "Link": link
-                })
+                    for item in items:
+            title = item.select_one("a.item-link").get_text(strip=True)
+            price_tag = item.select_one(".item-price")
+            price = price_tag.get_text(strip=True).replace("€", "").replace(".", "") if price_tag else "0"
+            details = item.select(".item-detail")
+
+            m2 = "0"
+            planta = ""
+            ascensor = "No"
+            estado = ""
+            for detail in details:
+                text = detail.get_text(strip=True).lower()
+                if "m²" in text:
+                    m2 = text.split("m²")[0].strip().replace(",", ".")
+                if "planta" in text:
+                    planta = text
+                if "ascensor" in text:
+                    ascensor = "Sí"
+                if any(palabra in text for palabra in ["reformado", "nuevo", "a reformar"]):
+                    estado = text
+
+            link = "https://www.idealista.com" + item.select_one("a.item-link")["href"]
+            try:
+                m2_val = float(m2) if m2.replace('.', '', 1).isdigit() else 0
+                price_val = float(price)
+                eur_m2 = price_val / m2_val if m2_val else 0
+            except:
+                eur_m2 = 0
+            propiedades.append({
+                "Subzona": nombre,
+                "Título": title,
+                "Precio (€)": price,
+                "Superficie (m²)": m2,
+                "€/m²": f"{eur_m2:,.0f}",
+                "Planta": planta.title(),
+                "Ascensor": ascensor,
+                "Estado": estado.title(),
+                "Link": link
+            })
+
         except Exception as e:
             st.warning(f"Error al scrapear {nombre}: {e}")
 
