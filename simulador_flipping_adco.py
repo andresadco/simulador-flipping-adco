@@ -302,7 +302,7 @@ if "df_subzona" in st.session_state:
                 max_value=int(maximo),
                 value=(int(minimo), int(maximo)),
                 key=f"slider_comparables_{subzona}"
-"
+
             )
 
             df_filtrado = df_subzona[(df_subzona["€/m²"] >= rango[0]) & (df_subzona["€/m²"] <= rango[1])]
