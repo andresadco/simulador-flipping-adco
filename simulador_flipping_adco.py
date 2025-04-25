@@ -315,3 +315,14 @@ if "df_subzona" in st.session_state:
 
         except Exception as e:
             st.error(f"Error procesando comparables: {e}")
+            # Botón para lanzar el scraping
+if st.button("🔍 Obtener comparables de la subzona"):
+    with st.spinner("Consultando Idealista..."):
+        url = SUBZONAS_M30[zona][subzona]
+        df = scrapear_subzona(subzona, url)
+        if not df.empty:
+            df["Link"] = df["Link"].apply(lambda x: f"[Ver anuncio]({x})")
+            st.session_state["df_subzona"] = df
+            st.success(f"Se obtuvieron {len(df)} propiedades en {subzona}")
+        else:
+            st.warning("No se encontraron resultados.")
