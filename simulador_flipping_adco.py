@@ -234,7 +234,7 @@ def scrapear_subzona(nombre, url_base):
             response = requests.get("http://api.scraperapi.com", params=params, headers=headers, timeout=20)
             soup = BeautifulSoup(response.text, "html.parser")
             items = soup.select(".item-info-container")
-           def scrapear_subzona(nombre, url_base):
+def scrapear_subzona(nombre, url_base):
     scraperapi_key = "c21a8e492547f96ed694f796c0355091"
     headers_list = [
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
@@ -280,7 +280,7 @@ def scrapear_subzona(nombre, url_base):
             response = requests.get("http://api.scraperapi.com", params=params, headers=headers, timeout=20)
             soup = BeautifulSoup(response.text, "html.parser")
             items = soup.select(".item-info-container")
-            for item in items:
+        for item in items:
                 title = item.select_one("a.item-link").get_text(strip=True)
                 price_tag = item.select_one(".item-price")
                 price = price_tag.get_text(strip=True).replace("€", "").replace(".", "") if price_tag else "0"
