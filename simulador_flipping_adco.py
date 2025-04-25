@@ -198,11 +198,12 @@ SUBZONAS_M30 = {
     },
     "Centro": {
         "Sol": "https://www.idealista.com/venta-viviendas/madrid/centro/sol/",
-        "Justicia": "https://www.idealista.com/venta-viviendas/madrid/centro/justicia/",
-        "Malasaña-Universidad": "https://www.idealista.com/venta-viviendas/madrid/centro/universidad/",
-        "La Latina": "https://www.idealista.com/venta-viviendas/madrid/centro/palacio/",
-        "Lavapiés": "https://www.idealista.com/venta-viviendas/madrid/centro/embajadores/",
-        "Embajadores": "https://www.idealista.com/venta-viviendas/madrid/centro/cortes/"
+        "Chueca Justicia": "https://www.idealista.com/venta-viviendas/madrid/centro/chueca-justicia/",
+        "Malasaña-Universidad": "https://www.idealista.com/venta-viviendas/madrid/centro/malasana-universidad/",
+        "Lavapiés Embajadores": "https://www.idealista.com/venta-viviendas/madrid/centro/lavapies-embajadores/",
+       "Huertas Cortes": https://www.idealista.com/venta-viviendas/madrid/centro/huertas-cortes/
+         "Palacio": https://www.idealista.com/venta-viviendas/madrid/centro/palacio/
+        
     }
 }
 
