@@ -189,12 +189,12 @@ SUBZONAS_M30 = {
         "Gaztambide": "https://www.idealista.com/venta-viviendas/madrid/chamberi/gaztambide/"
     },
     "Salamanca": {
-        "Recoletos": "https://www.idealista.com/venta-viviendas/madrid/salamanca/recoletos/",
-        "Castellana": "https://www.idealista.com/venta-viviendas/madrid/salamanca/castellana/",
-        "Lista": "https://www.idealista.com/venta-viviendas/madrid/salamanca/lista/",
-        "Goya": "https://www.idealista.com/venta-viviendas/madrid/salamanca/goya/",
-        "Fuente del Berro": "https://www.idealista.com/venta-viviendas/madrid/salamanca/fuente-del-berro/",
-        "Guindalera": "https://www.idealista.com/venta-viviendas/madrid/salamanca/guindalera/"
+        "Recoletos": "https://www.idealista.com/venta-viviendas/madrid/barrio-de-salamanca/recoletos/",
+        "Castellana": "https://www.idealista.com/venta-viviendas/madrid/barrio-de-salamanca/castellana/",
+        "Lista": "https://www.idealista.com/venta-viviendas/madrid/barrio-de-salamanca/lista/",
+        "Goya": "https://www.idealista.com/venta-viviendas/madrid/barrio-de-salamanca/goya/",
+        "Fuente del Berro": "https://www.idealista.com/venta-viviendas/madrid/barrio-de-salamanca/fuente-del-berro/",
+        "Guindalera": "https://www.idealista.com/venta-viviendas/madrid/barrio-de-salamanca/guindalera/"
     },
     "Centro": {
         "Sol": "https://www.idealista.com/venta-viviendas/madrid/centro/sol/",
