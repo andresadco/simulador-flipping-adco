@@ -203,8 +203,8 @@ SUBZONAS_M30 = {
 zona = st.selectbox("Selecciona zona", list(SUBZONAS_M30.keys()))
 subzona = st.selectbox("Selecciona subzona", list(SUBZONAS_M30[zona].keys()))
 
-def scrapear_subzona(nombre, url_base):
-    scraperapi_key = "tu_api_key"
+ef scrapear_subzona(nombre, url_base):
+    scraperapi_key = "TU_API_KEY"
     headers_list = [
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
@@ -214,7 +214,7 @@ def scrapear_subzona(nombre, url_base):
     for page in range(1, 3):
         time.sleep(random.uniform(1.5, 3.0))
         params = {"api_key": scraperapi_key, "url": f"{url_base}pagina-{page}.htm"}
-        headers = {"User-Agent": random.choice(headers_list)}
+        headers = {"User-Agent": random.choice(headers_list), "Accept-Language": "es-ES,es;q=0.9"}
         try:
             response = requests.get("http://api.scraperapi.com", params=params, headers=headers, timeout=20)
             soup = BeautifulSoup(response.text, "html.parser")
@@ -223,43 +223,39 @@ def scrapear_subzona(nombre, url_base):
                 title = item.select_one("a.item-link").get_text(strip=True)
                 price_tag = item.select_one(".item-price")
                 price = price_tag.get_text(strip=True).replace("€", "").replace(".", "") if price_tag else "0"
-                m2 = "0"
                 details = item.select(".item-detail")
+                m2 = "0"
+                planta = ""
+                ascensor = "No"
+                estado = ""
                 for detail in details:
-                    text = detail.get_text(strip=True)
+                    text = detail.get_text(strip=True).lower()
                     if "m²" in text:
                         m2 = text.split("m²")[0].strip().replace(",", ".")
+                    if "planta" in text:
+                        planta = text
+                    if "ascensor" in text:
+                        ascensor = "Sí"
+                    if any(palabra in text for palabra in ["reformado", "nuevo", "a reformar"]):
+                        estado = text
                 link = "https://www.idealista.com" + item.select_one("a.item-link")["href"]
+                try:
+                    m2_val = float(m2) if m2.replace('.', '', 1).isdigit() else 0
+                    price_val = float(price)
+                    eur_m2 = price_val / m2_val if m2_val else 0
+                except:
+                    eur_m2 = 0
                 propiedades.append({
+                    "Subzona": nombre,
                     "Título": title,
                     "Precio (€)": price,
                     "Superficie (m²)": m2,
+                    "€/m²": f"{eur_m2:,.0f}",
+                    "Planta": planta.title(),
+                    "Ascensor": ascensor,
+                    "Estado": estado.title(),
                     "Link": link
                 })
         except Exception as e:
-            st.warning(f"Error: {e}")
+            st.warning(f"Error al scrapear {nombre}: {e}")
     return pd.DataFrame(propiedades)
-
-if st.button("Obtener comparables"):
-    df = scrapear_subzona(subzona, SUBZONAS_M30[zona][subzona])
-    if not df.empty:
-        st.dataframe(df)
-
-
-# --- Mejoras en Análisis ---
-if "df" in locals() and not df.empty:
-    df["€/m²"] = pd.to_numeric(df["Precio (€)"], errors="coerce") / pd.to_numeric(df["Superficie (m²)"], errors="coerce")
-    promedio = df["€/m²"].mean()
-    st.metric("Promedio €/m²", f"{promedio:,.0f} €")
-
-    st.subheader("🎛️ Filtro avanzado")
-    rango = st.slider("Filtrar por €/m²", int(df["€/m²"].min()), int(df["€/m²"].max()), (int(df["€/m²"].min()), int(df["€/m²"].max())))
-    df_filtrado = df[(df["€/m²"] >= rango[0]) & (df["€/m²"] <= rango[1])]
-    st.dataframe(df_filtrado)
-
-    media = df["€/m²"].mean()
-    df["Clasificación"] = pd.cut(df["€/m²"],
-        bins=[0, media*0.9, media*1.1, np.inf],
-        labels=["Media-Baja", "Media", "Media-Alta"]
-    )
-    st.write(df[["Título", "€/m²", "Clasificación"]])
