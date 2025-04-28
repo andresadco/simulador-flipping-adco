@@ -328,3 +328,4 @@ if "df_subzona" in st.session_state:
     df_filtrado["Link"] = df_filtrado["Link"].apply(lambda x: f"[Ver anuncio]({x})")
     st.write(f"🔎 Se muestran {len(df_filtrado)} propiedades dentro del rango y filtros aplicados.")
     st.write(df_filtrado.to_markdown(index=False), unsafe_allow_html=True)
+
