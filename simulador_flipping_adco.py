@@ -319,11 +319,19 @@ if "df_subzona" in st.session_state:
     estado_op = st.multiselect("Estado del piso", options=df_filtrado["Estado"].unique(), default=list(df_filtrado["Estado"].unique()))
     planta_op = st.multiselect("Planta", options=df_filtrado["Planta"].unique(), default=list(df_filtrado["Planta"].unique()))
 
-    if "Desconocido" not in ascensor_op:
-    df_filtrado = df_filtrado[df_filtrado["Ascensor"].isin(ascensor_op)]
-    df_filtrado = df_filtrado[df_filtrado["Estado"].isin(estado_op)]
-    if "Desconocido" not in planta_op:
-    df_filtrado = df_filtrado[df_filtrado["Planta"].isin(planta_op)]
+   # Filtros de comparables corregidos
+filtrado = df_filtrado.copy()
+filtrado = filtrado[(filtrado["Precio_m2"] >= rango_precio[0]) & (filtrado["Precio_m2"] <= rango_precio[1])]
+
+if "Desconocido" not in ascensor_op:
+    filtrado = filtrado[filtrado["Ascensor"].isin(ascensor_op)]
+
+if "Desconocido" not in estado_op:
+    filtrado = filtrado[filtrado["Estado"].isin(estado_op)]
+
+if "Desconocido" not in planta_op:
+    filtrado = filtrado[filtrado["Planta"].isin(planta_op)]
+
 
     df_filtrado["Link"] = df_filtrado["Link"].apply(lambda x: f"[Ver anuncio]({x})")
     st.write(f"🔎 Se muestran {len(df_filtrado)} propiedades dentro del rango y filtros aplicados.")
