@@ -112,14 +112,94 @@ for v in range(delta_precio[0], delta_precio[1] + 1, 5):
     })
 
 st.dataframe(pd.DataFrame(resultados))
+# --- RESUMEN EJECUTIVO ---
+st.subheader("📋 Resumen Ejecutivo de la Inversión")
 
+if roi < 10:
+    interpretacion = "⚠️ Rentabilidad baja"
+elif 10 <= roi <= 20:
+    interpretacion = "✅ Rentabilidad aceptable"
+else:
+    interpretacion = "🚀 Rentabilidad excelente"
+
+frase_inversion = (
+    f"💬 Este proyecto proyecta una rentabilidad del **{roi:.2f}%** y una TIR del **{tir:.2f}%**. "
+    f"Requiere un capital propio estimado de **{capital_propio:,.0f} €** con un préstamo de "
+    f"**{monto_prestamo:,.0f} €**. {interpretacion} para inversiones de corto plazo en Madrid."
+)
+
+resumen_data = {
+    "Concepto": [
+        "🏠 Precio de compra",
+        "🏠 Comisión de compra",
+        "🏠 ITP / IVA de compra",
+        "🏠 Gastos legales",
+        "🏠 Gastos administrativos",
+        "🏠 IBI",
+        "🛠️ Coste de reforma (con IVA)",
+        "💼 Inversión total",
+        "🏦 Préstamo solicitado",
+        "💸 Intereses del préstamo",
+        "💼 Capital propio invertido",
+        "📈 Precio de venta",
+        "📈 Comisión de venta",
+        "📊 Ganancia neta esperada",
+        "📊 ROI real (%)",
+        "📊 TIR real (%)"
+    ],
+    "Valor estimado (€)": [
+        f"{precio_compra:,.0f}",
+        f"{precio_compra * comision_compra / 100:,.0f}",
+        f"{precio_compra * itp / 100:,.0f}",
+        f"{gastos_legales:,.0f}",
+        f"{gastos_administrativos:,.0f}",
+        f"{ibi:,.0f}",
+        f"{coste_reforma_iva:,.0f}",
+        f"{inversion_total:,.0f}",
+        f"{monto_prestamo:,.0f}",
+        f"{intereses_totales:,.0f}",
+        f"{capital_propio:,.0f}",
+        f"{precio_venta:,.0f}",
+        f"{comision_venta_eur:,.0f}",
+        f"{ganancia_neta:,.0f}",
+        f"{roi:.2f}",
+        f"{tir:.2f}"
+    ]
+}
+df_resumen = pd.DataFrame(resumen_data)
+st.dataframe(df_resumen, hide_index=True)
+st.markdown(frase_inversion)
 # --- Comparador de Subzonas ---
 st.header("🏙️ Comparador de Subzonas")
 
 SUBZONAS_M30 = {
-    "Chamberí": {"Almagro": "https://www.idealista.com/venta-viviendas/madrid/chamberi/almagro/"},
-    "Salamanca": {"Recoletos": "https://www.idealista.com/venta-viviendas/madrid/barrio-de-salamanca/recoletos/"},
-    "Centro": {"Sol": "https://www.idealista.com/venta-viviendas/madrid/centro/sol/"}
+    # Subzonas y URLs
+SUBZONAS_M30 = {
+    "Chamberí": {
+        "Almagro": "https://www.idealista.com/venta-viviendas/madrid/chamberi/almagro/",
+        "Trafalgar": "https://www.idealista.com/venta-viviendas/madrid/chamberi/trafalgar/",
+        "Ríos Rosas": "https://www.idealista.com/venta-viviendas/madrid/chamberi/rios-rosas/",
+        "Arapiles": "https://www.idealista.com/venta-viviendas/madrid/chamberi/arapiles/",
+        "Vallehermoso": "https://www.idealista.com/venta-viviendas/madrid/chamberi/vallehermoso/",
+        "Gaztambide": "https://www.idealista.com/venta-viviendas/madrid/chamberi/gaztambide/"
+    },
+    "Salamanca": {
+        "Recoletos": "https://www.idealista.com/venta-viviendas/madrid/barrio-de-salamanca/recoletos/",
+        "Castellana": "https://www.idealista.com/venta-viviendas/madrid/barrio-de-salamanca/castellana/",
+        "Lista": "https://www.idealista.com/venta-viviendas/madrid/barrio-de-salamanca/lista/",
+        "Goya": "https://www.idealista.com/venta-viviendas/madrid/barrio-de-salamanca/goya/",
+        "Fuente del Berro": "https://www.idealista.com/venta-viviendas/madrid/barrio-de-salamanca/fuente-del-berro/",
+        "Guindalera": "https://www.idealista.com/venta-viviendas/madrid/barrio-de-salamanca/guindalera/"
+    },
+    "Centro": {
+        "Sol": "https://www.idealista.com/venta-viviendas/madrid/centro/sol/",
+        "Chueca Justicia": "https://www.idealista.com/venta-viviendas/madrid/centro/chueca-justicia/",
+        "Malasaña-Universidad": "https://www.idealista.com/venta-viviendas/madrid/centro/malasana-universidad/",
+        "Lavapiés Embajadores": "https://www.idealista.com/venta-viviendas/madrid/centro/lavapies-embajadores/",
+        "Huertas Cortes": "https://www.idealista.com/venta-viviendas/madrid/centro/huertas-cortes/",
+         "Palacio": "https://www.idealista.com/venta-viviendas/madrid/centro/palacio/"
+        
+
 }
 
 zona = st.selectbox("Zona", list(SUBZONAS_M30.keys()))
@@ -184,3 +264,38 @@ if st.button("🔍 Buscar Comparables"):
         st.dataframe(df)
     else:
         st.warning("No se encontraron propiedades en esta subzona.")
+# --- Mostrar análisis si ya hay datos
+if "df_subzona" in st.session_state:
+    df_subzona = st.session_state["df_subzona"]
+    
+    try:
+        st.subheader("📊 Análisis de Comparables")
+        df_subzona["€/m²"] = df_subzona["€/m²"].astype(str).str.replace(",", "").astype(float)
+        df_subzona["Superficie (m²)"] = df_subzona["Superficie (m²)"].astype(str).str.replace(",", ".").astype(float)
+    except Exception as e:
+        st.error(f"Error procesando comparables: {e}")
+
+    # ✅ Ahora sí fuera del try empieza el análisis visual
+    columnas_necesarias = ["Ascensor", "Estado", "Planta"]
+    for columna in columnas_necesarias:
+        if columna not in df_subzona.columns:
+            df_subzona[columna] = "Desconocido"
+
+    promedio = df_subzona["€/m²"].mean()
+    minimo = df_subzona["€/m²"].min()
+    maximo = df_subzona["€/m²"].max()
+
+    st.metric("📍 Promedio €/m²", f"{promedio:,.0f} €")
+    st.metric("📉 Mínimo €/m²", f"{minimo:,.0f} €")
+    st.metric("📈 Máximo €/m²", f"{maximo:,.0f} €")
+
+    st.subheader("🎛️ Filtro de comparables por €/m²")
+    rango = st.slider(
+        "Selecciona el rango €/m²",
+        min_value=int(minimo),
+        max_value=int(maximo),
+        value=(int(minimo), int(maximo)),
+        key="slider_comparables"
+    )
+    
+    df_filtrado = df_subzona[(df_subzona["€/m²"] >= rango[0]) & (df_subzona["€/m²"] <= rango[1])]
