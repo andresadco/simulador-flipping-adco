@@ -319,7 +319,7 @@ if "df_subzona" in st.session_state:
     estado_op = st.multiselect("Estado del piso", options=df_filtrado["Estado"].unique(), default=list(df_filtrado["Estado"].unique()))
     planta_op = st.multiselect("Planta", options=df_filtrado["Planta"].unique(), default=list(df_filtrado["Planta"].unique()))
 
-   # Filtros de comparables corregidos
+    # Filtros de comparables corregidos
 filtrado = df_filtrado.copy()
 filtrado = filtrado[(filtrado["Precio_m2"] >= rango_precio[0]) & (filtrado["Precio_m2"] <= rango_precio[1])]
 
