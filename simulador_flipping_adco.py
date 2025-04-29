@@ -282,57 +282,36 @@ if st.button("🔍 Obtener comparables de la subzona"):
 if "df_subzona" in st.session_state:
     df_subzona = st.session_state["df_subzona"]
     
-    try:
-        st.subheader("📊 Análisis de Comparables")
-        df_subzona["€/m²"] = df_subzona["€/m²"].astype(str).str.replace(",", "").astype(float)
-        df_subzona["Superficie (m²)"] = df_subzona["Superficie (m²)"].astype(str).str.replace(",", ".").astype(float)
-    except Exception as e:
-        st.error(f"Error procesando comparables: {e}")
+    with st.expander("📊 Análisis de Comparables", expanded=True):
+        try:
+            df_subzona["€/m²"] = df_subzona["€/m²"].astype(str).str.replace(",", "").astype(float)
+            df_subzona["Superficie (m²)"] = df_subzona["Superficie (m²)"].astype(str).str.replace(",", ".").astype(float)
 
-    # ✅ Ahora sí fuera del try empieza el análisis visual
-    columnas_necesarias = ["Ascensor", "Estado", "Planta"]
-    for columna in columnas_necesarias:
-        if columna not in df_subzona.columns:
-            df_subzona[columna] = "Desconocido"
+            promedio = df_subzona["€/m²"].mean()
+            minimo = df_subzona["€/m²"].min()
+            maximo = df_subzona["€/m²"].max()
 
-    promedio = df_subzona["€/m²"].mean()
-    minimo = df_subzona["€/m²"].min()
-    maximo = df_subzona["€/m²"].max()
+            st.metric("📍 Promedio €/m²", f"{promedio:,.0f} €")
+            st.metric("📉 Mínimo €/m²", f"{minimo:,.0f} €")
+            st.metric("📈 Máximo €/m²", f"{maximo:,.0f} €")
 
-    st.metric("📍 Promedio €/m²", f"{promedio:,.0f} €")
-    st.metric("📉 Mínimo €/m²", f"{minimo:,.0f} €")
-    st.metric("📈 Máximo €/m²", f"{maximo:,.0f} €")
+            st.subheader("🎛️ Filtro de comparables por €/m²")
+            rango = st.slider(
+                "Selecciona el rango €/m²",
+                min_value=int(minimo),
+                max_value=int(maximo),
+                value=(int(minimo), int(maximo)),
+                key="slider_comparables"
+            )
 
-    st.subheader("🎛️ Filtro de comparables por €/m²")
-    rango = st.slider(
-        "Selecciona el rango €/m²",
-        min_value=int(minimo),
-        max_value=int(maximo),
-        value=(int(minimo), int(maximo)),
-        key="slider_comparables"
-    )
-    
-    df_filtrado = df_subzona[(df_subzona["€/m²"] >= rango[0]) & (df_subzona["€/m²"] <= rango[1])]
+            df_filtrado = df_subzona[(df_subzona["€/m²"] >= rango[0]) & (df_subzona["€/m²"] <= rango[1])]
+            df_filtrado["Link"] = df_filtrado["Link"].apply(lambda x: f"[Ver anuncio]({x})")
 
-    # Filtros adicionales
-    ascensor_op = st.multiselect("Ascensor", options=df_filtrado["Ascensor"].unique(), default=list(df_filtrado["Ascensor"].unique()))
-    estado_op = st.multiselect("Estado del piso", options=df_filtrado["Estado"].unique(), default=list(df_filtrado["Estado"].unique()))
-    planta_op = st.multiselect("Planta", options=df_filtrado["Planta"].unique(), default=list(df_filtrado["Planta"].unique()))
+            st.write(f"🔎 Se muestran {len(df_filtrado)} propiedades dentro del rango seleccionado.")
+            st.write(df_filtrado.to_markdown(index=False), unsafe_allow_html=True)
 
-    # Filtros de comparables corregidos
-filtrado = df_filtrado.copy()
-filtrado = filtrado[(filtrado["Precio_m2"] >= rango_precio[0]) & (filtrado["Precio_m2"] <= rango_precio[1])]
+        except Exception as e:
+            st.error(f"Error procesando comparables: {e}")
 
-if "Desconocido" not in ascensor_op:
-    filtrado = filtrado[filtrado["Ascensor"].isin(ascensor_op)]
+   
 
-if "Desconocido" not in estado_op:
-    filtrado = filtrado[filtrado["Estado"].isin(estado_op)]
-
-if "Desconocido" not in planta_op:
-    filtrado = filtrado[filtrado["Planta"].isin(planta_op)]
-
-
-    df_filtrado["Link"] = df_filtrado["Link"].apply(lambda x: f"[Ver anuncio]({x})")
-    st.write(f"🔎 Se muestran {len(df_filtrado)} propiedades dentro del rango y filtros aplicados.")
-    st.write(df_filtrado.to_markdown(index=False), unsafe_allow_html=True)
