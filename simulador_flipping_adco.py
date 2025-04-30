@@ -313,5 +313,6 @@ if "df_subzona" in st.session_state:
         except Exception as e:
             st.error(f"Error procesando comparables: {e}")
 
+
    
 
