@@ -319,7 +319,7 @@ st.markdown("## 📊 Captación Inmobiliaria Inteligente")
 
 # Panel superior
 col1, col2, col3 = st.columns(3)
-col1.metric("Oportunidades actuales", len(df_filtrado))
+col1.metric("Oportunidades actuales", len(df_filtrado) if "df_filtrado" in locals() and not df_filtrado.empty else "0")
 col2.metric("Analizadas hoy", 50)
 col3.metric("Precisión del modelo", "92%")
 
@@ -341,20 +341,20 @@ st.plotly_chart(fig, use_container_width=True)
 st.subheader("🔍 Oportunidades detectadas")
 colf1, colf2, colf3, colf4 = st.columns(4)
 
-zonas = ["Todas"] + sorted(df_filtrado["Zona"].dropna().unique().tolist()) if "Zona" in df_filtrado.columns else ["Todas"]
+zonas = ["Todas"] + sorted(df_filtrado["Zona"].dropna().unique().tolist()) if "df_filtrado" in locals() and "Zona" in df_filtrado.columns else ["Todas"]
 zona_sel = colf1.selectbox("Zona", zonas)
 
-precios = ["Todas"] + sorted(df_filtrado["Precio"].dropna().unique().tolist()) if "Precio" in df_filtrado.columns else ["Todas"]
+precios = ["Todas"] + sorted(df_filtrado["Precio"].dropna().unique().tolist()) if "df_filtrado" in locals() and "Precio" in df_filtrado.columns else ["Todas"]
 precio_sel = colf2.selectbox("Precio", precios)
 
-tamanos = ["Todos"] + sorted(df_filtrado["Superficie"].dropna().unique().tolist()) if "Superficie" in df_filtrado.columns else ["Todos"]
+tamanos = ["Todos"] + sorted(df_filtrado["Superficie"].dropna().unique().tolist()) if "df_filtrado" in locals() and "Superficie" in df_filtrado.columns else ["Todos"]
 tamano_sel = colf3.selectbox("Tamaño", tamanos)
 
-rentabilidades = ["Todas"] + sorted(df_filtrado["Rentabilidad"].dropna().unique().tolist()) if "Rentabilidad" in df_filtrado.columns else ["Todas"]
+rentabilidades = ["Todas"] + sorted(df_filtrado["Rentabilidad"].dropna().unique().tolist()) if "df_filtrado" in locals() and "Rentabilidad" in df_filtrado.columns else ["Todas"]
 rentabilidad_sel = colf4.selectbox("Rentabilidad", rentabilidades)
 
 # Aplicar filtros
-df_oportunidades = df_filtrado.copy()
+df_oportunidades = df_filtrado.copy() if "df_filtrado" in locals() and not df_filtrado.empty else pd.DataFrame()
 if zona_sel != "Todas" and "Zona" in df_oportunidades.columns:
     df_oportunidades = df_oportunidades[df_oportunidades["Zona"] == zona_sel]
 if precio_sel != "Todas" and "Precio" in df_oportunidades.columns:
@@ -368,5 +368,5 @@ if rentabilidad_sel != "Todas" and "Rentabilidad" in df_oportunidades.columns:
 st.download_button("📥 Exportar CSV", df_oportunidades.to_csv(index=False), "oportunidades.csv", "text/csv")
 
 st.dataframe(df_oportunidades)
-   
+
 
