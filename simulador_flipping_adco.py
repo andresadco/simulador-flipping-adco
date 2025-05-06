@@ -22,24 +22,24 @@ with st.expander("🏗️ Detalles del Proyecto"):
     col1, col2 = st.columns(2)
 
     with col1:
-        superficie = st.number_input("Superficie total (m²)", value=80)
-        superficie_reforma = st.number_input("Superficie a reformar (m²)", value=60)
-        coste_reforma_m2 = st.number_input("Coste por m² de reforma (€)", value=1400)
+        superficie = st.number_input("Superficie total (m²)", value=150)
+        superficie_reforma = st.number_input("Superficie a reformar (m²)", value=130)
+        coste_reforma_m2 = st.number_input("Coste por m² de reforma (€)", value=1600)
         costes_adicionales = st.number_input("Costes adicionales de reforma (€)", value=5000)
         iva_reforma = st.number_input("IVA en reforma (%)", value=10.0)
         zona = st.selectbox("Zona del piso", ["Chamberí", "Salamanca", "Retiro"])
 
     with col2:
-        precio_compra = st.number_input("Precio de compra (€)", value=850000)
-        comision_compra = st.number_input("Comisión de compra (%)", value=2.0)
+        precio_compra = st.number_input("Precio de compra (€)", value=100000)
+        comision_compra = st.number_input("Comisión de compra (%)", value=0.0)
         gastos_legales = st.number_input("Gastos legales (€)", value=3000)
         gastos_administrativos = st.number_input("Gastos administrativos (€)", value=3000)
-        itp = st.number_input("ITP o IVA de compra (%)", value=6.0)
-        ibi = st.number_input("IBI (€)", value=500)
+        itp = st.number_input("ITP o IVA de compra (%)", value=2.0)
+        ibi = st.number_input("IBI (€)", value=1000)
 
 # Venta
 st.subheader("💰 Precio de Venta y Comisión")
-precio_venta = st.number_input("Precio de venta esperado (€)", value=1350000)
+precio_venta = st.number_input("Precio de venta esperado (€)", value=1750000)
 comision_venta = st.number_input("Comisión de venta (%)", value=3.0)
 
 # Financiamiento
