@@ -121,7 +121,8 @@ resumen_data = {
         "💼 Capital propio invertido",
         "📈 Precio de venta",
         "📈 Comisión de venta",
-        "📊 Ganancia neta esperada",
+        "📊 Ganancia Bruta esperada",
+        "📊 Ganancia Neta esperada",
         "📊 ROI real (%)",
         "📊 TIR real (%)",
         "💸 Precio Venta m/2"
@@ -141,6 +142,7 @@ resumen_data = {
         f"{precio_venta:,.0f}",
         f"{comision_venta_eur:,.0f}",
         f"{ganancia_neta:,.0f}",
+        f"{ganancia_neta *.075:.0f}",
         f"{roi:.2f}",
         f"{tir:.2f}",
         f"{precio_venta / superficie:,.0F}"
