@@ -124,7 +124,7 @@ resumen_data = {
         "📊 Ganancia neta esperada",
         "📊 ROI real (%)",
         "📊 TIR real (%)"
-        
+        "💸 Precio Venta m/2"
     ],
     "Valor estimado (€)": [
         f"{precio_compra:,.0f}",
@@ -142,7 +142,7 @@ resumen_data = {
         f"{comision_venta_eur:,.0f}",
         f"{ganancia_neta:,.0f}",
         f"{roi:.2f}",
-        f"{tir:.2f}"
+        f"{tir:.2f}",
         f"{precio_venta / superficie:,.0F}"
     ]
 }
