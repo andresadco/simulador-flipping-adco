@@ -123,8 +123,8 @@ resumen_data = {
         "📈 Comisión de venta",
         "📊 Ganancia neta esperada",
         "📊 ROI real (%)",
-        "📊 TIR real (%)",
-        "💸 Precio M/2 ",
+        "📊 TIR real (%)"
+        "💸 Precio M/2 "
     ],
     "Valor estimado (€)": [
         f"{precio_compra:,.0f}",
