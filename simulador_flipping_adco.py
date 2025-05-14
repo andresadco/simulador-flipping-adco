@@ -124,7 +124,7 @@ resumen_data = {
         "📊 Ganancia neta esperada",
         "📊 ROI real (%)",
         "📊 TIR real (%)",
-        "💸 Precio M/2 "
+        "💸 Precio M/2 ".
     ],
     "Valor estimado (€)": [
         f"{precio_compra:,.0f}",
