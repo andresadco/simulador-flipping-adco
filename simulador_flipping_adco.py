@@ -109,6 +109,7 @@ frase_inversion = (
 resumen_data = {
     "Concepto": [
         "🏠 Precio de compra",
+        "💸 Precio M/2 ",
         "🏠 Comisión de compra",
         "🏠 ITP / IVA de compra",
         "🏠 Gastos legales",
@@ -124,7 +125,7 @@ resumen_data = {
         "📊 Ganancia neta esperada",
         "📊 ROI real (%)",
         "📊 TIR real (%)",
-        "💸 Precio M/2 "
+        
     ],
     "Valor estimado (€)": [
         f"{precio_compra:,.0f}",
