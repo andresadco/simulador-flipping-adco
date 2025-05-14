@@ -143,7 +143,7 @@ resumen_data = {
         f"{ganancia_neta:,.0f}",
         f"{roi:.2f}",
         f"{tir:.2f}"
-        f"{precio_venta / superficie:,0F}"
+        f"{precio_venta / superficie:,.0F}"
     ]
 }
 df_resumen = pd.DataFrame(resumen_data)
