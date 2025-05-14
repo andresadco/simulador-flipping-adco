@@ -124,6 +124,7 @@ resumen_data = {
         "📊 Ganancia neta esperada",
         "📊 ROI real (%)",
         "📊 TIR real (%)"
+        "💸 Precio M/2 "
     ],
     "Valor estimado (€)": [
         f"{precio_compra:,.0f}",
@@ -142,6 +143,7 @@ resumen_data = {
         f"{ganancia_neta:,.0f}",
         f"{roi:.2f}",
         f"{tir:.2f}"
+        f"{precio_venta:/superficie}"
     ]
 }
 df_resumen = pd.DataFrame(resumen_data)
